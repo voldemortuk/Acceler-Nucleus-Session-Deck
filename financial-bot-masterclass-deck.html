@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PowerUp by UnO | Building a RAG-Powered Financial Bot with LLMs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-tertiary: #e2e8f0;
+    --bg-card: #ffffff;
+    --bg-dark: #0f172a;
+    --bg-dark-card: rgba(255,255,255,0.04);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-light: #eff6ff;
+    --accent-glow: rgba(37,99,235,0.15);
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck { width: 100vw; height: 100vh; position: relative; background: var(--bg-primary); }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    background: var(--bg-primary);
+    overflow: hidden;
+  }
+
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide__inner { max-width: 1200px; width: 100%; }
+
+  /* Typography */
+  .eyebrow {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  .heading-xl {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 6vw, 84px);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .heading-lg {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 4.5vw, 60px);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .heading-md {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.5vw, 40px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .heading-sm {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.5vw, 28px);
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--text-primary);
+  }
+
+  .text-lg {
+    font-size: 24px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .text-md {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .accent { color: var(--accent); }
+  .accent-orange { color: var(--orange); }
+  .accent-green { color: var(--green); }
+
+  /* Navigation */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 200;
+    transition: width 0.4s ease;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .slide-counter {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    z-index: 100;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .slide-counter.visible { opacity: 1; }
+
+  .click-zone {
+    position: fixed;
+    top: 0;
+    width: 15%;
+    height: 100%;
+    z-index: 50;
+    cursor: pointer;
+  }
+  .click-zone--prev { left: 0; }
+  .click-zone--next { right: 0; }
+
+  /* ============================================
+     DARK SLIDES
+     ============================================ */
+  .slide--dark { background: var(--bg-dark); }
+  .slide--dark .eyebrow { color: #60a5fa; }
+  .slide--dark .heading-xl,
+  .slide--dark .heading-lg,
+  .slide--dark .heading-md,
+  .slide--dark .heading-sm { color: #fff; }
+  .slide--dark .text-lg,
+  .slide--dark .text-md { color: rgba(255,255,255,0.6); }
+
+  /* ============================================
+     COVER SLIDE
+     ============================================ */
+  .slide--cover { background: var(--bg-dark); text-align: center; }
+
+  .cover__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    color: #60a5fa;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .cover__title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 5.5vw, 76px);
+    color: #fff;
+    font-weight: 400;
+    line-height: 1.1;
+    max-width: 900px;
+    margin: 0 auto 24px;
+  }
+
+  .cover__sub {
+    max-width: 700px;
+    margin: 0 auto 40px;
+    font-size: 22px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+
+  .cover__meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .cover__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+
+  .cover__meta-item strong { color: #fff; }
+
+  .cover__instructor {
+    margin-top: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 12px 28px;
+  }
+
+  .cover__instructor-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .cover__instructor-role {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ============================================
+     SECTION HEADER
+     ============================================ */
+  .slide--section {
+    background: var(--bg-dark);
+    text-align: center;
+  }
+  .section__block-num {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #60a5fa;
+    margin-bottom: 20px;
+  }
+  .section__title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 5.5vw, 72px);
+    color: #fff;
+    font-weight: 400;
+    line-height: 1.1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .section__sub {
+    font-size: 22px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 20px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  .section__duration {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ============================================
+     STATEMENT SLIDE
+     ============================================ */
+  .slide--statement { text-align: center; }
+  .statement__text {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 4.5vw, 58px);
+    font-weight: 400;
+    line-height: 1.2;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .statement__sub {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-top: 24px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  .slide--dark .statement__sub { color: rgba(255,255,255,0.5); }
+
+  /* ============================================
+     JOURNEY / AGENDA BLOCKS
+     ============================================ */
+  .journey__blocks {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .journey__block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 22px;
+    text-align: center;
+  }
+  .journey__block-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .journey__block-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .journey__block-time {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .journey__block-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .journey__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--text-muted);
+  }
+
+  /* ============================================
+     3-COLUMN CARDS
+     ============================================ */
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .cards-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 24px;
+  }
+  .card--dark {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+  }
+  .card__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .card__tag {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .card__desc {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ============================================
+     PIPELINE (horizontal steps)
+     ============================================ */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .pipeline__stage {
+    flex: 1;
+    padding: 20px 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+  }
+  .pipeline__stage:first-child {
+    border: 1px solid var(--border);
+    border-radius: 14px 0 0 14px;
+    border-right: none;
+  }
+  .pipeline__stage:last-child {
+    border: 1px solid var(--border);
+    border-radius: 0 14px 14px 0;
+    border-left: none;
+  }
+  .pipeline__stage:not(:first-child):not(:last-child) {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .pipeline__arrow {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    z-index: 2;
+  }
+  .pipeline__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .pipeline__title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .pipeline__desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     CODE BLOCKS
+     ============================================ */
+  .code-block {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.7;
+    color: #e2e8f0;
+    overflow-x: auto;
+    border: 1px solid #334155;
+  }
+  .code-block .kw { color: #c084fc; }
+  .code-block .fn { color: #60a5fa; }
+  .code-block .str { color: #86efac; }
+  .code-block .cm { color: #64748b; }
+  .code-block .num { color: #fbbf24; }
+  .code-block .op { color: #94a3b8; }
+
+  /* ============================================
+     COMPARISON TABLE
+     ============================================ */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .compare-table th {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+  }
+  .compare-table td {
+    padding: 14px 20px;
+    font-size: 16px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    line-height: 1.5;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .compare-table td.bad {
+    color: var(--red);
+    background: var(--red-light);
+  }
+  .compare-table td.good {
+    color: var(--green);
+    background: var(--green-light);
+  }
+
+  /* ============================================
+     METRICS
+     ============================================ */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .metric {
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 16px;
+  }
+  .metric--dark {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+  }
+  .metric__num {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .metric--dark .metric__num { color: #60a5fa; }
+  .metric__label {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .metric--dark .metric__label { color: #fff; }
+  .metric__desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ============================================
+     CHECKLIST
+     ============================================ */
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+  .checklist li {
+    font-size: 19px;
+    color: var(--text-primary);
+    padding: 12px 0 12px 40px;
+    position: relative;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 16px;
+    width: 24px; height: 24px;
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent-light);
+  }
+
+  /* ============================================
+     QUERY CARDS
+     ============================================ */
+  .query-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .query-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .query-card__icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .query-card__icon--rag { background: var(--accent-light); color: var(--accent); }
+  .query-card__icon--tool { background: var(--orange-light); color: var(--orange); }
+  .query-card__text {
+    font-size: 16px;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .query-card__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .query-card__label--rag { color: var(--accent); }
+  .query-card__label--tool { color: var(--orange); }
+
+  /* ============================================
+     PITFALL CARDS
+     ============================================ */
+  .pitfall-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .pitfall-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .pitfall-card__num {
+    font-size: 12px;
+    font-weight: 700;
+    color: #60a5fa;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .pitfall-card__title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .pitfall-card__wrong {
+    font-size: 14px;
+    color: #fca5a5;
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .pitfall-card__right {
+    font-size: 14px;
+    color: #86efac;
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     TECH STACK
+     ============================================ */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .stack-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stack-item__icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  .stack-item__name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .stack-item__desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ============================================
+     SPEAKER NOTES
+     ============================================ */
+  .notes-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
+    color: rgba(255,255,255,0.85);
+    padding: 20px 40px;
+    font-size: 16px;
+    line-height: 1.6;
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    max-height: 30vh;
+    overflow-y: auto;
+    border-top: 2px solid var(--accent);
+  }
+  .notes-panel.visible { transform: translateY(0); }
+  .notes-panel__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #60a5fa;
+    margin-bottom: 8px;
+  }
+
+  .branding {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    z-index: 100;
+    opacity: 0.5;
+  }
+
+  /* ============================================
+     BEFORE / AFTER COMPARISON
+     ============================================ */
+  .ba__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .ba__col { }
+  .ba__col-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .ba__col-label--before { color: #dc2626; }
+  .ba__col-label--after { color: #16a34a; }
+  .ba__card--bad {
+    background: #fef2f2;
+    border: 2px solid #fecaca;
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .ba__card--good {
+    background: #f0fdf4;
+    border: 2px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .ba__query {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .ba__response {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .ba__response strong { color: var(--text-primary); }
+  .ba__tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-top: 14px;
+  }
+  .ba__tag--bad { background: #fecaca; color: #dc2626; }
+  .ba__tag--good { background: #bbf7d0; color: #16a34a; }
+
+  /* ============================================
+     2x2 MATRIX
+     ============================================ */
+  .matrix__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0;
+    height: 380px;
+    position: relative;
+  }
+  .matrix__cell {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+  }
+  .matrix__cell:nth-child(1) { border-radius: 16px 0 0 0; }
+  .matrix__cell:nth-child(2) { border-radius: 0 16px 0 0; }
+  .matrix__cell:nth-child(3) { border-radius: 0 0 0 16px; }
+  .matrix__cell:nth-child(4) { border-radius: 0 0 16px 0; }
+  .matrix__cell-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .matrix__cell-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .matrix__cell-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .matrix__cell--highlight {
+    background: var(--accent-light) !important;
+    border: 3px solid var(--accent) !important;
+    box-shadow: 0 0 40px rgba(37,99,235,0.12);
+  }
+  .matrix__cell--highlight .matrix__cell-title { color: var(--accent); }
+  .matrix__badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .matrix__badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .ba__layout { grid-template-columns: 1fr; }
+    .matrix__grid { grid-template-columns: 1fr; height: auto; }
+    .slide { padding: 40px; }
+    .journey__blocks { grid-template-columns: 1fr; }
+    .journey__arrow { transform: rotate(90deg); padding: 8px 0; }
+    .cards-3, .cards-4, .metrics, .stack-grid, .pitfall-grid, .query-cards { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; }
+    .compare-table { font-size: 14px; }
+  }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    .slide { page-break-after: always; page-break-inside: avoid; opacity: 1 !important; pointer-events: auto !important; position: relative !important; }
+    .progress-bar, .branding, .slide-counter, .click-zone { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ====== SLIDE 1: COVER ====== -->
+  <div class="slide slide--cover active">
+    <div class="slide__inner" style="text-align: center;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 36px; margin-bottom: 40px;">
+        <img src="../New_Logo_Blue.jpg" alt="Acceler" style="height: 80px; width: auto; border-radius: 8px;">
+        <div style="width: 2px; height: 56px; background: rgba(255,255,255,0.2);"></div>
+        <img src="deck_images/nucleus_logo.png" alt="Nucleus Software" style="height: 56px; width: auto; filter: brightness(0) invert(1);">
+      </div>
+      <div class="cover__badge">Nucleus Software &middot; MasterClass</div>
+      <div class="cover__title">
+        Building a RAG-Powered Financial Bot<br>with <span style="color: #60a5fa;">LLMs</span>
+      </div>
+      <p class="cover__sub">
+        Production-Grade AI Chatbot Using LLMs, Vector Databases &amp; Web Scraping
+      </p>
+      <div class="cover__meta">
+        <div class="cover__meta-item"><strong>3 Hours</strong> &middot; Live Virtual Labs</div>
+        <div class="cover__meta-item"><strong>7th April 2025</strong> &middot; 3:00&ndash;6:00 PM IST</div>
+      </div>
+      <div class="cover__instructor">
+        <span class="cover__instructor-name">Shivam Patel</span>
+        <span class="cover__instructor-role">Instructor</span>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 2: WHAT WE'RE BUILDING ====== -->
+  <div class="slide slide--dark slide--statement">
+    <div class="slide__inner">
+      <div class="eyebrow" style="text-align: center;">The Goal</div>
+      <div class="statement__text" style="color: #fff;">
+        Build a <span style="color: #60a5fa;">working Financial Bot</span> from scratch &mdash; no pre-built templates, no guided walkthroughs.
+      </div>
+      <div class="statement__sub">
+        Real code on real VMs. By 6 PM, every participant has a running chatbot that answers fintech queries with cited, retrieved context.
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: INSTRUCTOR INTRO ====== -->
+  <div class="slide" style="padding: 32px 52px;">
+    <div class="slide__inner">
+      <div style="display: flex; gap: 36px; align-items: flex-start;">
+        <!-- Left column: Photo + Specializations + Logos -->
+        <div style="flex-shrink: 0; width: 250px;">
+          <img src="deck_images/shivam_patel.png" alt="Shivam Patel" style="width: 190px; height: 190px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 18px; box-shadow: 0 6px 24px rgba(37,99,235,0.12); border: 4px solid var(--bg-secondary);">
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Technical Specializations</div>
+          <ul style="list-style: disc; padding-left: 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+            <li>Agentic AI &amp; LLM Workflows</li>
+            <li>Machine Learning &amp; Generative AI</li>
+            <li>RAG, NLP, Open Domain QA</li>
+            <li>Privacy-Preserving ML</li>
+            <li>Neural Architecture Search</li>
+          </ul>
+          <!-- Company/University logos -->
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">&#xf8ff; Apple</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Google</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Adobe</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">CMU</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">MIT</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Cambridge</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Mila</span>
+            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Caltech</span>
+          </div>
+        </div>
+        <!-- Right column: Details -->
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px;">Instructor Introduction</div>
+          <div style="font-family: var(--font-display); font-size: 30px; color: var(--text-primary); margin-bottom: 4px;">Shivam Patel</div>
+          <div style="font-size: 15px; color: var(--text-secondary); margin-bottom: 16px;">Sr. ML Engineer @ Apple | Formerly @ Google, CMU, MIT, Caltech, Mila, Cambridge</div>
+
+          <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 8px;">Career Highlights</div>
+          <ul style="list-style: disc; padding-left: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+            <li>At <strong style="color: var(--text-primary);">Apple</strong>, improving retrieval &amp; ranking models for RAG systems and agentic workflows powering Siri &amp; LLMs</li>
+            <li>At <strong style="color: var(--text-primary);">Google</strong> (3.5 yrs), built large-scale recommendation systems, neural architecture search, privacy-preserving ML, LLM-based feature engineering</li>
+            <li>At <strong style="color: var(--text-primary);">Adobe</strong>, developed transformer-based multi-modal architectures for text-based video object segmentation</li>
+            <li><strong style="color: var(--text-primary);">2 US Patents</strong> &mdash; text-based video object selection &amp; AI-blockchain recruitment</li>
+          </ul>
+
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Academic &amp; Teaching</div>
+          <ul style="list-style: disc; padding-left: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+            <li><strong style="color: var(--text-primary);">Instructor @ Interview Kickstart</strong> &mdash; ML, DL, GenAI, production Python</li>
+            <li>Trained <strong style="color: var(--text-primary);">3000+ working professionals</strong> in ML, GenAI &amp; Agentic AI</li>
+            <li>Visiting Researcher at <strong style="color: var(--text-primary);">Mila</strong> under Turing Laureate Prof Yoshua Bengio</li>
+            <li>Visiting Research Student at <strong style="color: var(--text-primary);">Cambridge</strong> (Centre for Existential Risk)</li>
+          </ul>
+
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Education</div>
+          <ul style="list-style: disc; padding-left: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+            <li><strong style="color: var(--text-primary);">MS, Computer Science</strong> &mdash; Carnegie Mellon University</li>
+            <li><strong style="color: var(--text-primary);">BTech, Computer Engineering</strong> &mdash; Nirma University (First Class with Distinction)</li>
+            <li>Research collaborations: MIT, Caltech, Stanford, Harvard</li>
+            <li><strong style="color: var(--text-primary);">Microsoft Global Hackathon Winner</strong> (2022, 2023) &middot; Erdos Number 2</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: ICEBREAKER ====== -->
+  <div class="slide slide--dark slide--statement">
+    <div class="slide__inner">
+      <div class="eyebrow" style="text-align: center; color: #60a5fa;">Icebreaker</div>
+      <div class="statement__text" style="color: #fff; font-style: italic;">
+        &ldquo;One fintech problem you wish <span style="color: #60a5fa;">AI could solve</span> in your current role&rdquo;
+      </div>
+      <div class="statement__sub" style="margin-top: 32px;">
+        Share with the room &mdash; we&rsquo;ll see how many of these our bot can tackle by 6 PM.
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 3: TODAY'S JOURNEY ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Today&rsquo;s Journey</div>
+      <div class="heading-md" style="margin-bottom: 32px;">Four parts. One working bot. <span class="accent">Zero hand-holding.</span></div>
+      <div class="journey__blocks">
+        <div class="journey__block">
+          <div class="journey__block-num">1</div>
+          <div class="journey__block-time">30 min</div>
+          <div class="journey__block-title">AI &amp; RAG Foundations</div>
+          <div class="journey__block-desc">Architecture, embeddings, ChromaDB &mdash; the mental model before you code.</div>
+        </div>
+        <div class="journey__arrow">&rarr;</div>
+        <div class="journey__block">
+          <div class="journey__block-num">2</div>
+          <div class="journey__block-time">30 min</div>
+          <div class="journey__block-title">Build the Data Pipeline</div>
+          <div class="journey__block-desc">Scrape live financial sites, chunk, embed, and ingest into ChromaDB.</div>
+        </div>
+        <div class="journey__arrow">&rarr;</div>
+        <div class="journey__block">
+          <div class="journey__block-num">3</div>
+          <div class="journey__block-time">30 min</div>
+          <div class="journey__block-title">Connect LLM &amp; Build Bot</div>
+          <div class="journey__block-desc">Wire RAG chain to GPT-4o-mini, build Streamlit UI, test live.</div>
+        </div>
+        <div class="journey__arrow">&rarr;</div>
+        <div class="journey__block">
+          <div class="journey__block-num">4</div>
+          <div class="journey__block-time">15 min</div>
+          <div class="journey__block-title">Tools &amp; Agents</div>
+          <div class="journey__block-desc">Extend bot with live API tools and AgentExecutor.</div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 28px; font-size: 17px; color: var(--text-muted);">
+        + 20 min Production Pitfalls &middot; Senior-level architecture decisions
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 4: TECH STACK ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Technology Stack</div>
+      <div class="heading-md" style="margin-bottom: 32px;">Everything you&rsquo;ll use <span class="accent">today</span></div>
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f578;</div>
+          <div class="stack-item__name">BeautifulSoup</div>
+          <div class="stack-item__desc">Web scraping &amp; HTML parsing</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f9e0;</div>
+          <div class="stack-item__name">OpenAI Embeddings</div>
+          <div class="stack-item__desc">text-embedding-ada-002</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f4be;</div>
+          <div class="stack-item__name">ChromaDB</div>
+          <div class="stack-item__desc">Vector database for RAG</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x26d3;</div>
+          <div class="stack-item__name">LangChain</div>
+          <div class="stack-item__desc">Orchestration framework</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f916;</div>
+          <div class="stack-item__name">GPT-4o-mini</div>
+          <div class="stack-item__desc">LLM for response generation</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f3a8;</div>
+          <div class="stack-item__name">Gradio</div>
+          <div class="stack-item__desc">Chat interface UI</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f40d;</div>
+          <div class="stack-item__name">Python 3.10+</div>
+          <div class="stack-item__desc">Runtime environment</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item__icon">&#x1f527;</div>
+          <div class="stack-item__name">AgentExecutor</div>
+          <div class="stack-item__desc">Tool-calling agent layer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: VIRTUAL LABS SETUP ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Before We Start</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Virtual Labs <span class="accent">Setup</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+        <div>
+          <ul class="checklist">
+            <li>Confirm Python 3.10+ &mdash; <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">python3 --version</code></li>
+            <li>Clone session repo &amp; cd into it</li>
+            <li>Create &amp; activate virtualenv</li>
+            <li>Install dependencies &mdash; <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">pip install -r requirements.txt</code></li>
+          </ul>
+        </div>
+        <div>
+          <ul class="checklist">
+            <li>Set OpenAI API key in environment</li>
+            <li>Verify ChromaDB import works</li>
+            <li>Verify LangChain import works</li>
+            <li>Open <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">Financial_Bot_with_LLMs.ipynb</code></li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 32px; text-align: center; padding: 16px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 17px; color: var(--accent); font-weight: 600;">
+        All green? Shivam begins Part 1.
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 6: SECTION — PART 1 ====== -->
+  <div class="slide slide--section">
+    <div class="section__block-num">Part 1 &middot; 30 Minutes</div>
+    <div class="section__title">AI &amp; RAG Foundations</div>
+    <div class="section__sub">The architecture of a Financial Bot &mdash; concepts before code.</div>
+    <div class="section__duration">3:25 &ndash; 3:55 PM IST</div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: FROM TRADITIONAL TO LLM ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">The Evolution</div>
+      <div class="heading-md" style="margin-bottom: 28px;">From rule-based bots to <span class="accent">LLM-powered intelligence</span></div>
+      <div style="display: flex; gap: 40px; align-items: center; justify-content: center;">
+        <img src="deck_images/neural_network.png" alt="Neural Network Architecture" style="height: 260px; width: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+        <div style="max-width: 500px;">
+          <div style="margin-bottom: 16px; padding: 16px 20px; background: var(--red-light); border: 1px solid #fecaca; border-radius: 10px;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 4px;">Rule-Based Chatbots</div>
+            <div style="font-size: 15px; color: var(--text-secondary); line-height: 1.5;">If-else logic. Can&rsquo;t handle ambiguity. Every new pattern = new rule. Doesn&rsquo;t scale.</div>
+          </div>
+          <div style="margin-bottom: 16px; padding: 16px 20px; background: var(--orange-light); border: 1px solid #fed7aa; border-radius: 10px;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--orange); margin-bottom: 4px;">ML / Deep Learning Models</div>
+            <div style="font-size: 15px; color: var(--text-secondary); line-height: 1.5;">Neural networks learn patterns. Better at ambiguity. But need custom training data for each task.</div>
+          </div>
+          <div style="padding: 16px 20px; background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px;">LLM-Powered (Today)</div>
+            <div style="font-size: 15px; color: var(--text-secondary); line-height: 1.5;">Pre-trained on massive data. Understands natural language. Add domain knowledge via RAG &mdash; no re-training needed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 7: THE PROBLEM — LLMs HALLUCINATE ====== -->
+  <div class="slide slide--dark slide--statement">
+    <div class="slide__inner">
+      <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
+        <div style="flex-shrink: 0;">
+          <img src="deck_images/brain_jar.png" alt="LLM - Brain in a Jar" style="height: 280px; width: auto; border-radius: 16px; opacity: 0.85;">
+        </div>
+        <div style="max-width: 600px;">
+          <div class="eyebrow">The Problem</div>
+          <div class="statement__text" style="color: #fff; font-size: clamp(32px, 3.5vw, 48px); text-align: left;">
+            Ask GPT-4 a <span style="color: #fca5a5;">current financial question</span> without context &mdash; and it gives you a <span style="color: #fca5a5;">confident wrong answer.</span>
+          </div>
+          <div class="statement__sub" style="text-align: left; margin-left: 0;">
+            LLMs are a &ldquo;smart brain in a jar&rdquo; &mdash; powerful reasoning, zero access to current data. For financial queries, that&rsquo;s not just wrong &mdash; it&rsquo;s dangerous.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: BEFORE/AFTER — HALLUCINATION DEMO ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Demo</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Same question. <span class="accent">Two very different answers.</span></div>
+      <div class="ba__layout">
+        <div class="ba__col">
+          <div class="ba__col-label ba__col-label--before">Without RAG &mdash; Pure LLM</div>
+          <div class="ba__card--bad">
+            <div class="ba__query">&ldquo;What is the current SBI home loan interest rate?&rdquo;</div>
+            <div class="ba__response">
+              The current SBI home loan interest rate is <strong>8.40% - 9.15% p.a.</strong> for salaried individuals. For self-employed borrowers, the rate starts at <strong>8.65% p.a.</strong> The processing fee is typically 0.35% of the loan amount&hellip;
+            </div>
+            <div class="ba__tag ba__tag--bad">Confident. Specific. Completely made up.</div>
+          </div>
+          <div style="margin-top: 16px; padding: 14px 18px; background: #fef2f2; border-radius: 10px; font-size: 15px; color: #dc2626; line-height: 1.5;">
+            The model has no access to current data. These numbers are hallucinated from training data that may be months or years old.
+          </div>
+        </div>
+        <div class="ba__col">
+          <div class="ba__col-label ba__col-label--after">With RAG &mdash; Retrieved Context</div>
+          <div class="ba__card--good">
+            <div class="ba__query">&ldquo;What is the current SBI home loan interest rate?&rdquo;</div>
+            <div class="ba__response">
+              Based on the retrieved data from SBI&rsquo;s website (scraped today): SBI home loan rates currently start at <strong>8.50% p.a.</strong> under their &ldquo;Regular Home Loan&rdquo; scheme. Rates vary by loan amount and CIBIL score.<br><br>
+              <em style="color: var(--text-muted);">Source: sbi.co.in/web/personal-banking/loans/home-loans</em>
+            </div>
+            <div class="ba__tag ba__tag--good">Grounded. Cited. Verifiable.</div>
+          </div>
+          <div style="margin-top: 16px; padding: 14px 18px; background: #f0fdf4; border-radius: 10px; font-size: 15px; color: #16a34a; line-height: 1.5;">
+            The answer comes from real, retrieved documents. The source is cited. The user can verify.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 8: RAG ARCHITECTURE ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">The Solution</div>
+      <div class="heading-md" style="margin-bottom: 32px;">Retrieval-Augmented Generation <span class="accent">(RAG)</span></div>
+      <div class="pipeline">
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 1</div>
+          <div class="pipeline__title">Website</div>
+          <div class="pipeline__desc">Live financial data sources</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 2</div>
+          <div class="pipeline__title">BeautifulSoup</div>
+          <div class="pipeline__desc">Scrape &amp; clean HTML</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 3</div>
+          <div class="pipeline__title">Embeddings</div>
+          <div class="pipeline__desc">Text &rarr; vectors</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 4</div>
+          <div class="pipeline__title">ChromaDB</div>
+          <div class="pipeline__desc">Store &amp; index vectors</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 5</div>
+          <div class="pipeline__title">LangChain RAG</div>
+          <div class="pipeline__desc">Retrieve &amp; augment prompt</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Step 6</div>
+          <div class="pipeline__title">GPT-4o-mini</div>
+          <div class="pipeline__desc">Generate grounded answer</div>
+          <div class="pipeline__arrow">&rarr;</div>
+        </div>
+        <div class="pipeline__stage">
+          <div class="pipeline__label">Output</div>
+          <div class="pipeline__title">Gradio UI</div>
+          <div class="pipeline__desc">User-facing chat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: RAG DIAGRAM — ZOOMED IN ====== -->
+  <div class="slide" style="padding: 40px 60px;">
+    <div class="slide__inner" style="text-align: center;">
+      <div class="eyebrow">RAG Architecture &mdash; Detailed View</div>
+      <div class="heading-md" style="margin-bottom: 24px;">The 5-step retrieval pipeline you&rsquo;ll <span class="accent">build today</span></div>
+      <img src="deck_images/rag_architecture.png" alt="RAG Architecture Diagram" style="width: 100%; max-width: 900px; border-radius: 16px; border: 2px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+      <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div style="padding: 8px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 100px; font-size: 14px; font-weight: 600; color: var(--accent);">1 &mdash; Prompt + Query enters</div>
+        <div style="padding: 8px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 100px; font-size: 14px; font-weight: 600; color: var(--accent);">2 &mdash; Query searches knowledge sources</div>
+        <div style="padding: 8px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 100px; font-size: 14px; font-weight: 600; color: var(--accent);">3 &mdash; Relevant context retrieved</div>
+        <div style="padding: 8px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 100px; font-size: 14px; font-weight: 600; color: var(--accent);">4 &mdash; Enhanced context sent to LLM</div>
+        <div style="padding: 8px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 100px; font-size: 14px; font-weight: 600; color: var(--accent);">5 &mdash; Grounded response generated</div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: RAG CYCLE — ANIMATED LOOP ====== -->
+  <div class="slide" style="padding: 32px 60px;">
+    <div class="slide__inner">
+      <div class="eyebrow">How RAG Works</div>
+      <div class="heading-md" style="margin-bottom: 16px;">The retrieval-generation <span class="accent">cycle</span></div>
+      <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
+        <!-- Circular loop SVG -->
+        <svg viewBox="0 0 440 440" width="380" height="380" style="flex-shrink: 0;">
+          <!-- Outer circular path -->
+          <circle cx="220" cy="220" r="175" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+          <!-- Animated flow arrow -->
+          <circle cx="220" cy="220" r="175" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="60,40" opacity="0.4">
+            <animateTransform attributeName="transform" type="rotate" from="0 220 220" to="360 220 220" dur="20s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Center label -->
+          <circle cx="220" cy="220" r="55" fill="var(--bg-dark)"/>
+          <text x="220" y="214" text-anchor="middle" font-family="DM Serif Display, serif" font-size="18" fill="#fff">RAG</text>
+          <text x="220" y="236" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" fill="rgba(255,255,255,0.5)">Chain</text>
+          <!-- 5 nodes around the circle -->
+          <!-- User Query (top) -->
+          <circle cx="220" cy="45" r="32" fill="var(--bg-card)" stroke="var(--accent)" stroke-width="2.5"/>
+          <text x="220" y="40" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="18">&#128172;</text>
+          <text x="220" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--accent)">QUERY</text>
+          <!-- Retrieve (top-right) -->
+          <circle cx="387" cy="138" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="387" y="133" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="18">&#128269;</text>
+          <text x="387" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">RETRIEVE</text>
+          <!-- Augment (bottom-right) -->
+          <circle cx="323" cy="345" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="323" y="340" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="18">&#128196;</text>
+          <text x="323" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">AUGMENT</text>
+          <!-- Generate (bottom-left) -->
+          <circle cx="117" cy="345" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="117" y="340" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="18">&#9889;</text>
+          <text x="117" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">GENERATE</text>
+          <!-- Answer (top-left) -->
+          <circle cx="53" cy="138" r="32" fill="var(--bg-card)" stroke="var(--green)" stroke-width="2.5"/>
+          <text x="53" y="133" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="18">&#9989;</text>
+          <text x="53" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--green)">ANSWER</text>
+          <!-- Direction arrows -->
+          <text x="316" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8594;</text>
+          <text x="380" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(60 380 255)">&#8594;</text>
+          <text x="220" y="392" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8592;</text>
+          <text x="65" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-60 65 255)">&#8594;</text>
+          <text x="124" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-30 124 78)">&#8593;</text>
+        </svg>
+        <!-- Right side descriptions -->
+        <div style="max-width: 380px;">
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--accent);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 2px;">Query</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">User asks a financial question in natural language</div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Retrieve</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">ChromaDB finds the k most relevant document chunks via vector similarity</div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Augment</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Retrieved docs are injected into the prompt template as <code style="font-family: var(--font-mono); font-size: 14px;">{context}</code></div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Generate</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">GPT-4o-mini synthesizes an answer grounded in the retrieved context</div>
+          </div>
+          <div style="padding-left: 16px; border-left: 3px solid var(--green);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 2px;">Answer</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Cited, verifiable response delivered to the user via Streamlit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 9: WHY RAG > PURE LLM ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">RAG vs Pure LLM</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Why RAG <span class="accent">wins</span> for financial queries</div>
+      <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px;">
+        <img src="deck_images/user_llm_chat.png" alt="User-LLM interaction" style="height: 160px; width: auto; border-radius: 10px; border: 1px solid var(--border);">
+        <div style="font-size: 17px; color: var(--text-secondary); line-height: 1.6; max-width: 500px;">
+          A pure LLM conversation looks simple &mdash; user asks, model answers. But without grounding, the model invents facts. RAG adds a retrieval step between question and answer.
+        </div>
+      </div>
+      <div class="cards-3">
+        <div class="card">
+          <div class="card__tag">Problem</div>
+          <div class="card__title">Knowledge Cutoff</div>
+          <div class="card__desc">LLMs are frozen in time. Financial data changes daily &mdash; interest rates, guidelines, market data.</div>
+        </div>
+        <div class="card">
+          <div class="card__tag">Problem</div>
+          <div class="card__title">Hallucination</div>
+          <div class="card__desc">Without grounding, LLMs fabricate numbers, cite non-existent policies, and sound confident doing it.</div>
+        </div>
+        <div class="card">
+          <div class="card__tag" style="color: var(--green);">Solution</div>
+          <div class="card__title">RAG = Grounded Answers</div>
+          <div class="card__desc">Retrieve real documents, inject into prompt, generate answers with cited context. Traceable and accurate.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: 2x2 MATRIX — CHOOSING YOUR APPROACH ====== -->
+  <div class="slide" style="padding: 48px 80px;">
+    <div class="slide__inner">
+      <div class="eyebrow">Choosing Your Approach</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Where does each approach <span class="accent">fit?</span></div>
+      <div style="position: relative; max-width: 960px; margin: 0 auto;">
+        <!-- Axis labels -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 8px;">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Static Knowledge</span>
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Knowledge Freshness &rarr;</span>
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Live / Dynamic Data</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <!-- Top-left: Fine-Tuning -->
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 14px; padding: 28px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">High customization &middot; Static data</div>
+            <div style="font-family: var(--font-display); font-size: 26px; color: var(--text-primary); margin-bottom: 10px;">Fine-Tuning</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Train on domain-specific data. Expensive and can&rsquo;t update without re-training.</div>
+          </div>
+          <!-- Top-right: RAG + Agents — HIGHLIGHTED -->
+          <div style="background: var(--accent-light); border: 3px solid var(--accent); border-radius: 14px; padding: 28px; box-shadow: 0 0 40px rgba(37,99,235,0.1); position: relative;">
+            <div style="position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 16px; border-radius: 100px;">Today&rsquo;s Focus</div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">High customization &middot; Live data</div>
+            <div style="font-family: var(--font-display); font-size: 26px; color: var(--accent); margin-bottom: 10px;">RAG + Agents</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Retrieve fresh data, ground LLM responses, call live APIs. Best for financial queries.</div>
+          </div>
+          <!-- Bottom-left: Pure LLM -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 28px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">Low customization &middot; Static data</div>
+            <div style="font-family: var(--font-display); font-size: 26px; color: var(--text-muted); margin-bottom: 10px;">Pure LLM</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Off-the-shelf GPT/Claude. Good for general tasks. Fails on domain-specific or current data.</div>
+          </div>
+          <!-- Bottom-right: API + Tools -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 28px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">Low customization &middot; Live data</div>
+            <div style="font-family: var(--font-display); font-size: 26px; color: var(--text-primary); margin-bottom: 10px;">API + Tools Only</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Direct API calls. Simple and fast, but no domain knowledge or retrieval.</div>
+          </div>
+        </div>
+        <!-- Diagonal arrow -->
+        <svg style="position: absolute; top: 46px; left: 0; width: 100%; height: 100%; pointer-events: none;" viewBox="0 0 960 500">
+          <defs><marker id="arrowhead" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="var(--accent)"/></marker></defs>
+          <line x1="120" y1="440" x2="840" y2="60" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="10,6" opacity="0.3" marker-end="url(#arrowhead)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 10: EMBEDDINGS EXPLAINED ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Core Concept</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Embeddings &mdash; turning text into <span class="accent">vectors</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+        <div>
+          <div class="text-md" style="margin-bottom: 20px;">
+            An embedding is a <strong>high-dimensional numerical representation</strong> of text. Similar meanings &rarr; similar vectors &rarr; similarity search.
+          </div>
+          <div class="text-md" style="margin-bottom: 20px;">
+            <strong>Model:</strong> OpenAI text-embedding-ada-002<br>
+            <strong>Dimension:</strong> 1536 floats per chunk
+          </div>
+          <div class="text-md">
+            &ldquo;home loan interest rate&rdquo; and &ldquo;housing mortgage APR&rdquo; produce <strong>nearby vectors</strong> even though the words differ.
+          </div>
+        </div>
+        <div class="code-block">
+<span class="cm"># What an embedding looks like</span>
+<span class="kw">from</span> langchain_community.embeddings <span class="kw">import</span> <span class="fn">OpenAIEmbeddings</span>
+
+embed = <span class="fn">OpenAIEmbeddings</span>()
+vector = embed.<span class="fn">embed_query</span>(<span class="str">"home loan rate"</span>)
+
+<span class="cm"># vector = [0.0023, -0.0142, 0.0391, ...]</span>
+<span class="cm"># Length: 1536 dimensions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 11: CHROMADB ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Vector Database</div>
+      <div class="heading-md" style="margin-bottom: 28px;">ChromaDB &mdash; <span class="accent">store, index, retrieve</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+        <div>
+          <div class="cards-3" style="grid-template-columns: 1fr;">
+            <div class="card">
+              <div class="card__title">Collections</div>
+              <div class="card__desc">Group documents by topic or source. Each collection stores vectors + metadata + original text.</div>
+            </div>
+            <div class="card">
+              <div class="card__title">Similarity Search</div>
+              <div class="card__desc">Query with natural language &rarr; get the k most relevant documents. Fast cosine similarity under the hood.</div>
+            </div>
+            <div class="card">
+              <div class="card__title">Why Chroma?</div>
+              <div class="card__desc">Lightweight, Python-native, zero config. Perfect for dev and small production. We&rsquo;ll discuss alternatives in Production Pitfalls.</div>
+            </div>
+          </div>
+        </div>
+        <div class="code-block">
+<span class="cm"># ChromaDB similarity search</span>
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> <span class="fn">Chroma</span>
+
+results = vectorstore.<span class="fn">similarity_search</span>(
+    <span class="str">"home loan interest rate"</span>,
+    k=<span class="num">3</span>
+)
+
+<span class="kw">for</span> doc <span class="kw">in</span> results:
+    <span class="fn">print</span>(doc.page_content[:100])
+    <span class="fn">print</span>(doc.metadata)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 12: LANGCHAIN ANATOMY ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Orchestration</div>
+      <div class="heading-md" style="margin-bottom: 28px;">LangChain &mdash; <span class="accent">the glue</span> connecting everything</div>
+      <div class="text-md" style="margin-bottom: 24px;">LangChain connects the scraper &rarr; embedder &rarr; retriever &rarr; LLM in a unified chain. These are the key imports you&rsquo;ll use:</div>
+      <div class="code-block" style="font-size: 15px;">
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">ChatOpenAI</span>                <span class="cm"># LLM wrapper</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">OpenAIEmbeddings</span>            <span class="cm"># Embedding model</span>
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> <span class="fn">Chroma</span>               <span class="cm"># Vector DB</span>
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> <span class="fn">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="fn">ChatPromptTemplate</span>    <span class="cm"># Prompt template</span>
+<span class="kw">from</span> langchain.chains.combine_documents <span class="kw">import</span> <span class="fn">create_stuff_documents_chain</span>
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> <span class="fn">create_retrieval_chain</span>    <span class="cm"># RAG chain</span>
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="fn">WebBaseLoader</span>
+      </div>
+      <div style="margin-top: 24px; padding: 16px 24px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px;">
+        <div style="font-size: 17px; color: var(--accent); font-weight: 600;">Open the notebook now</div>
+        <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Find where each import connects in <code style="font-family: var(--font-mono);">Financial_Bot_with_LLMs.ipynb</code> &mdash; no running code yet, just anatomy.</div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 13: SECTION — PART 2 ====== -->
+  <div class="slide slide--section">
+    <div class="section__block-num">Part 2 &middot; 30 Minutes</div>
+    <div class="section__title">Build the Data Pipeline</div>
+    <div class="section__sub">Scrape, vectorize, ingest &mdash; hands on VMs.</div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 14: STEP 1 — WEB SCRAPING ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 2 &middot; Step 1</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Web Scraping &mdash; <span class="accent">extract financial data</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;"><strong>What you&rsquo;re doing:</strong></div>
+          <ul class="checklist" style="margin-bottom: 0;">
+            <li>Parse Zerodha Varsity sitemap for financial URLs</li>
+            <li>Load pages with LangChain&rsquo;s WebBaseLoader</li>
+            <li>Auto-extract text content from HTML</li>
+            <li>Store as LangChain Document objects</li>
+          </ul>
+          <div style="margin-top: 20px; padding: 14px 18px; background: var(--bg-secondary); border-radius: 10px; font-size: 15px; color: var(--text-secondary); line-height: 1.5;">
+            <strong style="color: var(--text-primary);">10 minutes.</strong> Run the loader cells. Inspect <code style="font-family: var(--font-mono); font-size: 14px;">docs[0].page_content</code>. Notice the raw text &mdash; that&rsquo;s why chunking matters.
+          </div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Parse sitemap for URLs</span>
+<span class="kw">from</span> bs4 <span class="kw">import</span> <span class="fn">BeautifulSoup</span>
+<span class="kw">from</span> urllib.request <span class="kw">import</span> Request, urlopen
+
+url = <span class="str">"https://zerodha.com/varsity/</span>
+<span class="str">       chapter-sitemap2.xml"</span>
+xml = <span class="fn">get_sitemap</span>(url)
+urls = <span class="fn">get_urls</span>(xml)
+
+<span class="cm"># Load pages into Documents</span>
+<span class="kw">from</span> langchain_community.document_loaders \
+    <span class="kw">import</span> <span class="fn">WebBaseLoader</span>
+
+docs = []
+<span class="kw">for</span> url <span class="kw">in</span> urls:
+    loader = <span class="fn">WebBaseLoader</span>(url)
+    docs.<span class="fn">extend</span>(loader.<span class="fn">load</span>())
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 15: STEP 2 — CHUNKING ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 2 &middot; Step 2</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Chunking &mdash; <span class="accent">why size matters</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div>
+          <div class="text-md" style="margin-bottom: 20px;">Raw scraped text is too long for embeddings. We split into <strong>overlapping chunks</strong> that preserve context.</div>
+          <div class="cards-3" style="grid-template-columns: 1fr;">
+            <div class="card" style="padding: 18px 20px;">
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">chunk_size = 1000</strong> &mdash; In characters, not tokens. Gives each chunk enough context for financial Q&A without exceeding embedding limits.</div>
+            </div>
+            <div class="card" style="padding: 18px 20px;">
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">chunk_overlap = 200</strong> &mdash; 20% overlap prevents context loss at boundaries. Sentences that straddle splits stay intact in at least one chunk.</div>
+            </div>
+          </div>
+          <div style="margin-top: 16px; font-size: 15px; color: var(--text-muted);">5 minutes. Inspect the first 3 chunks &mdash; each should be a coherent financial snippet.</div>
+        </div>
+        <div class="code-block">
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> \
+    <span class="fn">RecursiveCharacterTextSplitter</span>
+
+text_splitter = <span class="fn">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="num">1000</span>,   <span class="cm"># in characters</span>
+    chunk_overlap=<span class="num">200</span>  <span class="cm"># in characters</span>
+)
+
+splits = text_splitter.<span class="fn">split_documents</span>(docs)
+
+<span class="fn">print</span>(<span class="str">f"len(docs): </span>{<span class="fn">len</span>(docs)}<span class="str">"</span>)
+<span class="fn">print</span>(<span class="str">f"len(splits): </span>{<span class="fn">len</span>(splits)}<span class="str">"</span>)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 16: STEP 3 — EMBED & INGEST ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 2 &middot; Step 3</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Embed &amp; Ingest into <span class="accent">ChromaDB</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div>
+          <div class="text-md" style="margin-bottom: 20px;">Convert chunks to vectors using OpenAI&rsquo;s embedding model, then store everything in ChromaDB.</div>
+          <div class="text-md" style="margin-bottom: 20px;">After this step, you have a <strong>populated vector database</strong> with 50+ financial documents on your Virtual Lab.</div>
+          <div style="padding: 14px 18px; background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; font-size: 15px; color: var(--green); line-height: 1.5; font-weight: 600;">
+            10 minutes. Watch the embeddings being created. Inspect a single vector &mdash; 1536 dimensions of meaning.
+          </div>
+        </div>
+        <div class="code-block">
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">OpenAIEmbeddings</span>
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> <span class="fn">Chroma</span>
+
+vectorstore = <span class="fn">Chroma</span>.<span class="fn">from_documents</span>(
+    documents=splits,
+    embedding=<span class="fn">OpenAIEmbeddings</span>()
+)
+
+retriever = vectorstore.<span class="fn">as_retriever</span>()
+
+<span class="fn">print</span>(<span class="fn">OpenAIEmbeddings</span>().model)
+<span class="cm"># text-embedding-ada-002</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 17: STEP 4 — VERIFY ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 2 &middot; Step 4</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Verify &mdash; <span class="accent">does it actually work?</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div class="code-block" style="font-size: 16px;">
+<span class="cm"># Run a test similarity search</span>
+res = vectorstore.<span class="fn">similarity_search</span>(
+    <span class="str">"What is an index"</span>
+)
+
+<span class="fn">print</span>(res[<span class="num">0</span>].metadata)
+<span class="fn">print</span>(res[<span class="num">0</span>].page_content[:300])
+        </div>
+        <div>
+          <div class="text-md" style="margin-bottom: 20px;"><strong>What you should see:</strong></div>
+          <div class="cards-3" style="grid-template-columns: 1fr;">
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
+              <div style="font-size: 16px; color: var(--text-primary);">3 relevant documents about home loans returned</div>
+            </div>
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
+              <div style="font-size: 16px; color: var(--text-primary);">Metadata showing source URL and chunk position</div>
+            </div>
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
+              <div style="font-size: 16px; color: var(--text-primary);">Content directly answering the query</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; padding: 14px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 16px; color: var(--accent); font-weight: 600;">
+            DB confirmed. You&rsquo;re ready for Part 3.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 18: SECTION — PART 3 ====== -->
+  <div class="slide slide--section">
+    <div class="section__block-num">Part 3 &middot; 30 Minutes</div>
+    <div class="section__title">Connect the LLM &amp; Build the Bot</div>
+    <div class="section__sub">Wire ChromaDB to GPT-4o-mini. Ship a Streamlit UI.</div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 19: LLM SETUP ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 3 &middot; Step 1</div>
+      <div class="heading-md" style="margin-bottom: 28px;">LLM Setup &mdash; <span class="accent">GPT-4o-mini</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div>
+          <div class="text-md" style="margin-bottom: 20px;">Configure the language model with settings optimized for <strong>financial accuracy</strong>:</div>
+          <div class="cards-3" style="grid-template-columns: 1fr;">
+            <div class="card" style="padding: 18px 20px;">
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">temperature = 0.3</strong></div>
+              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Low enough for accuracy, high enough for readable paraphrasing. 0.0 kills useful variation; 0.7+ hallucinates.</div>
+            </div>
+            <div class="card" style="padding: 18px 20px;">
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">model = gpt-4o-mini-2024-07-18</strong></div>
+              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Fast, cheap, and capable enough for RAG. The retriever does the heavy lifting &mdash; the LLM synthesizes.</div>
+            </div>
+          </div>
+        </div>
+        <div class="code-block">
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">ChatOpenAI</span>
+
+llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o-mini"</span>)
+
+<span class="cm"># No longer using gpt-3.5-turbo</span>
+<span class="cm"># — gpt-4o-mini is newer, cheaper,</span>
+<span class="cm"># and more capable for RAG tasks</span>
+
+<span class="cm"># Quick test</span>
+response = llm.<span class="fn">invoke</span>(
+    <span class="str">"What is a mutual fund?"</span>
+)
+<span class="fn">print</span>(response.content)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 20: PROMPT TEMPLATE ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 3 &middot; Step 2</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Prompt Template &mdash; <span class="accent">structure matters</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div class="code-block" style="font-size: 14px;">
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> \
+    <span class="fn">ChatPromptTemplate</span>
+
+system_prompt = (
+  <span class="str">"You are a financial assistant for "</span>
+  <span class="str">"question-answering tasks. Use the "</span>
+  <span class="str">"following pieces of retrieved context "</span>
+  <span class="str">"to answer the question. If you don't "</span>
+  <span class="str">"know the answer, say that you don't "</span>
+  <span class="str">"know. Use three sentences maximum and "</span>
+  <span class="str">"keep the answer concise."</span>
+  <span class="str">"If the question is not clear ask "</span>
+  <span class="str">"follow up questions"</span>
+  <span class="str">"\n\n"</span>
+  <span class="str">"{context}"</span>
+)
+
+prompt = <span class="fn">ChatPromptTemplate</span>.<span class="fn">from_messages</span>([
+  (<span class="str">"system"</span>, system_prompt),
+  (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+])
+        </div>
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;"><strong>Test 3 variations:</strong></div>
+          <div class="cards-3" style="grid-template-columns: 1fr;">
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--accent);">
+              <div style="font-size: 15px;"><strong>Strict:</strong> &ldquo;Answer ONLY from context. No outside knowledge.&rdquo;</div>
+            </div>
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--orange);">
+              <div style="font-size: 15px;"><strong>Explanatory:</strong> &ldquo;Explain in simple terms with examples.&rdquo;</div>
+            </div>
+            <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
+              <div style="font-size: 15px;"><strong>Summary:</strong> &ldquo;Provide a 2-3 sentence summary.&rdquo;</div>
+            </div>
+          </div>
+          <div style="margin-top: 16px; font-size: 15px; color: var(--text-muted); line-height: 1.5;">
+            Same query, different prompt &rarr; observe how wording changes output quality. The variables <code style="font-family: var(--font-mono); font-size: 14px;">{context}</code> and <code style="font-family: var(--font-mono); font-size: 14px;">{question}</code> are populated at runtime by LangChain.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 21: RAG CHAIN ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 3 &middot; Step 3</div>
+      <div class="heading-md" style="margin-bottom: 28px;">The RAG Chain &mdash; <span class="accent">connecting it all</span></div>
+      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: start;">
+        <div class="code-block" style="font-size: 14px;">
+<span class="kw">from</span> langchain.chains.combine_documents \
+    <span class="kw">import</span> <span class="fn">create_stuff_documents_chain</span>
+<span class="kw">from</span> langchain.chains \
+    <span class="kw">import</span> <span class="fn">create_retrieval_chain</span>
+
+<span class="cm"># Step 1: stuff docs into prompt</span>
+question_answer_chain = \
+  <span class="fn">create_stuff_documents_chain</span>(llm, prompt)
+
+<span class="cm"># Step 2: connect retriever</span>
+rag_chain = <span class="fn">create_retrieval_chain</span>(
+    retriever, question_answer_chain
+)
+
+<span class="cm"># Test it!</span>
+response = rag_chain.<span class="fn">invoke</span>(
+    {<span class="str">"input"</span>: <span class="str">"What is index fund?"</span>}
+)
+<span class="fn">print</span>(response[<span class="str">"answer"</span>])
+        </div>
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;">This is the <strong>moment of truth.</strong></div>
+          <div class="text-md" style="margin-bottom: 16px;">Two chains work together:</div>
+          <ul style="list-style: none; padding: 0;">
+            <li style="font-size: 17px; padding: 8px 0 8px 28px; position: relative; color: var(--text-secondary); line-height: 1.5;"><span style="position: absolute; left: 0; color: var(--accent); font-weight: 700;">1.</span> <code style="font-family: var(--font-mono); font-size: 15px;">create_stuff_documents_chain</code> &mdash; formats retrieved docs into the prompt</li>
+            <li style="font-size: 17px; padding: 8px 0 8px 28px; position: relative; color: var(--text-secondary); line-height: 1.5;"><span style="position: absolute; left: 0; color: var(--accent); font-weight: 700;">2.</span> <code style="font-family: var(--font-mono); font-size: 15px;">create_retrieval_chain</code> &mdash; connects retriever to the QA chain</li>
+            <li style="font-size: 17px; padding: 8px 0 8px 28px; position: relative; color: var(--text-secondary); line-height: 1.5;"><span style="position: absolute; left: 0; color: var(--accent); font-weight: 700;">3.</span> Result has <code style="font-family: var(--font-mono); font-size: 15px;">response["answer"]</code> + <code style="font-family: var(--font-mono); font-size: 15px;">response["context"]</code></li>
+          </ul>
+          <div style="margin-top: 12px; padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-muted); font-style: italic;">&ldquo;What is index fund?&rdquo; &rarr; grounded answer from Zerodha Varsity content</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 22: STREAMLIT UI ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 3 &middot; Step 4</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Gradio Chat UI &mdash; <span class="accent">ship it</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div class="code-block" style="font-size: 14px;">
+<span class="kw">import</span> gradio <span class="kw">as</span> gr
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> \
+    <span class="fn">AIMessage</span>, <span class="fn">HumanMessage</span>
+
+<span class="kw">def</span> <span class="fn">predict</span>(question, chat_history):
+    history = []
+    <span class="kw">for</span> tup <span class="kw">in</span> chat_history:
+        history.<span class="fn">extend</span>([
+            <span class="fn">HumanMessage</span>(tup[<span class="num">0</span>]),
+            <span class="fn">AIMessage</span>(tup[<span class="num">1</span>])
+        ])
+    ai_msg = rag_chain.<span class="fn">invoke</span>({
+        <span class="str">"input"</span>: question,
+        <span class="str">"chat_history"</span>: history
+    })
+    <span class="kw">return</span> ai_msg[<span class="str">"answer"</span>]
+
+demo = gr.<span class="fn">ChatInterface</span>(predict,
+    title=<span class="str">"DocumentQABot"</span>,
+    theme=<span class="str">"soft"</span>)
+demo.<span class="fn">launch</span>()
+        </div>
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;">Gradio gives you a <strong>chat interface with history</strong> in ~15 lines. It runs right inside Google Colab.</div>
+          <div style="padding: 14px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 16px; color: var(--accent); font-weight: 600; margin-bottom: 16px;">
+            Bonus: Chat history is built in &mdash; Gradio handles it automatically.
+          </div>
+          <div class="text-md" style="margin-bottom: 16px;">Test these queries:</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What is an index fund?&rdquo;</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;I want to give someone the right to manage my assets, what should I do?&rdquo;</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What are the risks of investing in small-cap funds?&rdquo;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 23: SAMPLE QUERIES ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Test Your Bot</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Financial queries to <span class="accent">evaluate</span></div>
+      <div class="query-cards">
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--rag">R</div>
+          <div>
+            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
+            <div class="query-card__text">&ldquo;What is the current interest rate for home loans in India?&rdquo;</div>
+          </div>
+        </div>
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--rag">R</div>
+          <div>
+            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
+            <div class="query-card__text">&ldquo;Provide insights on large-cap mutual funds performance&rdquo;</div>
+          </div>
+        </div>
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--rag">R</div>
+          <div>
+            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
+            <div class="query-card__text">&ldquo;What are the tax implications of investing in government bonds?&rdquo;</div>
+          </div>
+        </div>
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--rag">R</div>
+          <div>
+            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
+            <div class="query-card__text">&ldquo;Summarize the latest RBI guidelines on digital lending&rdquo;</div>
+          </div>
+        </div>
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--rag">R</div>
+          <div>
+            <div class="query-card__label query-card__label--rag">RAG + Synthesis</div>
+            <div class="query-card__text">&ldquo;Compare fixed deposits vs mutual funds for a 3-year horizon&rdquo;</div>
+          </div>
+        </div>
+        <div class="query-card">
+          <div class="query-card__icon query-card__icon--tool">T</div>
+          <div>
+            <div class="query-card__label query-card__label--tool">Tool Call (Part 4)</div>
+            <div class="query-card__text">&ldquo;What is the current USD/INR exchange rate?&rdquo;</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 20px; text-align: center; font-size: 15px; color: var(--text-muted);">
+        Evaluate each response for: accuracy, hallucination, and whether context was cited.
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 24: SECTION — PART 4 ====== -->
+  <div class="slide slide--section">
+    <div class="section__block-num">Part 4 &middot; 15 Minutes</div>
+    <div class="section__title">Tools &amp; Agent Extension</div>
+    <div class="section__sub">Zero theory. Write a tool. Register it. Break it.</div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 25: WRITE THE TOOL ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 4 &middot; Step 1</div>
+      <div class="heading-md" style="margin-bottom: 28px;">The Problem &mdash; <span class="accent">RAG can&rsquo;t do everything</span></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;">Try asking the RAG chain:</div>
+          <div class="code-block" style="margin-bottom: 16px; font-size: 15px;">
+<span class="cm"># This will fail or hallucinate!</span>
+response = rag_chain.<span class="fn">invoke</span>({
+    <span class="str">"input"</span>: <span class="str">"What is the latest news</span>
+<span class="str">    about the Microsoft stock?"</span>
+})
+          </div>
+          <div class="text-md" style="margin-bottom: 16px;">RAG can only retrieve what&rsquo;s <strong>already in the vector store</strong>. For live data like stock news, we need <strong>tools</strong>.</div>
+          <div style="padding: 14px 18px; background: var(--orange-light); border: 1px solid var(--orange); border-radius: 10px; font-size: 16px; color: var(--orange); font-weight: 600;">
+            Enter: LangChain Agents + Yahoo Finance Tool
+          </div>
+        </div>
+        <div class="code-block" style="font-size: 15px;">
+<span class="kw">from</span> langchain_community.tools\
+    .yahoo_finance_news <span class="kw">import</span> \
+    <span class="fn">YahooFinanceNewsTool</span>
+
+tools = [<span class="fn">YahooFinanceNewsTool</span>()]
+
+<span class="cm"># This tool fetches live stock news</span>
+<span class="cm"># from Yahoo Finance — something</span>
+<span class="cm"># our vector DB can't do.</span>
+
+<span class="cm"># The agent will decide WHEN to</span>
+<span class="cm"># use this tool vs. the retriever</span>
+<span class="cm"># based on the user's question.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 26: AGENT EXECUTOR ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Part 4 &middot; Step 2</div>
+      <div class="heading-md" style="margin-bottom: 28px;">Initialize the <span class="accent">Agent</span></div>
+      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: start;">
+        <div class="code-block" style="font-size: 15px;">
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> \
+    <span class="fn">AgentType</span>, <span class="fn">initialize_agent</span>
+<span class="kw">from</span> langchain_community.tools\
+    .yahoo_finance_news <span class="kw">import</span> \
+    <span class="fn">YahooFinanceNewsTool</span>
+
+llm = <span class="fn">ChatOpenAI</span>(
+    model=<span class="str">"gpt-4o-mini"</span>,
+    temperature=<span class="num">0.0</span>
+)
+tools = [<span class="fn">YahooFinanceNewsTool</span>()]
+
+agent_chain = <span class="fn">initialize_agent</span>(
+    tools,
+    llm,
+    agent=AgentType
+        .<span class="fn">ZERO_SHOT_REACT_DESCRIPTION</span>,
+    verbose=<span class="num">True</span>,
+    handle_parsing_errors=<span class="num">True</span>,
+)
+
+agent_chain.<span class="fn">run</span>(
+    <span class="str">"What is the latest news about</span>
+<span class="str">     the Microsoft stock?"</span>
+)
+        </div>
+        <div>
+          <div class="text-md" style="margin-bottom: 16px;"><strong>ZERO_SHOT_REACT_DESCRIPTION</strong></div>
+          <div class="text-md" style="margin-bottom: 16px;">A zero-shot agent that does a <strong>reasoning step before acting</strong>. Uses the ReAct framework to decide which tool to use based on the tool&rsquo;s description.</div>
+          <div class="text-md" style="margin-bottom: 16px;">Set <strong>verbose=True</strong> to watch the trace:</div>
+          <div class="code-block" style="font-size: 13px; background: #0f172a; border-color: #1e293b;">
+<span class="cm">Thought: I need to find the latest
+news about Microsoft stock.
+
+Action: yahoo_finance_news
+Action Input: MSFT
+
+Observation: Microsoft reported
+strong Q3 earnings driven by
+cloud and AI revenue growth...
+
+Final Answer: The latest Microsoft
+(MSFT) news includes strong Q3
+earnings driven by Azure and AI...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE: AGENT REASONING LOOP ====== -->
+  <div class="slide" style="padding: 32px 60px;">
+    <div class="slide__inner">
+      <div class="eyebrow">How the Agent Thinks</div>
+      <div class="heading-md" style="margin-bottom: 12px;">The ReAct loop &mdash; <span class="accent">Thought &rarr; Action &rarr; Observation</span></div>
+      <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
+        <!-- Circular loop SVG -->
+        <svg viewBox="0 0 440 440" width="360" height="360" style="flex-shrink: 0;">
+          <circle cx="220" cy="220" r="175" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+          <circle cx="220" cy="220" r="175" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="60,40" opacity="0.4">
+            <animateTransform attributeName="transform" type="rotate" from="0 220 220" to="360 220 220" dur="15s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Center -->
+          <circle cx="220" cy="220" r="55" fill="var(--bg-dark)"/>
+          <text x="220" y="214" text-anchor="middle" font-family="DM Serif Display, serif" font-size="17" fill="#fff">Agent</text>
+          <text x="220" y="236" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="rgba(255,255,255,0.5)">Executor</text>
+          <!-- Input (top) -->
+          <circle cx="220" cy="45" r="32" fill="var(--bg-card)" stroke="var(--accent)" stroke-width="2.5"/>
+          <text x="220" y="40" text-anchor="middle" font-size="18">&#128172;</text>
+          <text x="220" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--accent)">INPUT</text>
+          <!-- Thought (top-right) -->
+          <circle cx="387" cy="138" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="387" y="133" text-anchor="middle" font-size="18">&#129504;</text>
+          <text x="387" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">THOUGHT</text>
+          <!-- Action (bottom-right) -->
+          <circle cx="323" cy="345" r="32" fill="var(--bg-card)" stroke="var(--orange)" stroke-width="2.5"/>
+          <text x="323" y="340" text-anchor="middle" font-size="18">&#9889;</text>
+          <text x="323" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--orange)">ACTION</text>
+          <!-- Observation (bottom-left) -->
+          <circle cx="117" cy="345" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="117" y="340" text-anchor="middle" font-size="18">&#128200;</text>
+          <text x="117" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">OBSERVE</text>
+          <!-- Final Answer (top-left) -->
+          <circle cx="53" cy="138" r="32" fill="var(--bg-card)" stroke="var(--green)" stroke-width="2.5"/>
+          <text x="53" y="133" text-anchor="middle" font-size="18">&#9989;</text>
+          <text x="53" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--green)">ANSWER</text>
+          <!-- Arrows -->
+          <text x="316" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8594;</text>
+          <text x="380" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(60 380 255)">&#8594;</text>
+          <text x="220" y="392" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8592;</text>
+          <text x="65" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-60 65 255)">&#8594;</text>
+          <text x="124" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-30 124 78)">&#8593;</text>
+        </svg>
+        <div style="max-width: 400px;">
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--accent);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 2px;">Input</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">&ldquo;What is the latest news about the Microsoft stock?&rdquo;</div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Thought</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">I need to find the latest news about Microsoft stock. I should use the Yahoo Finance tool.</div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--orange);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--orange); margin-bottom: 2px;">Action</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Calls <code style="font-family: var(--font-mono); font-size: 14px;">yahoo_finance_news(&quot;MSFT&quot;)</code></div>
+          </div>
+          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Observe</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Microsoft reported strong Q3 earnings driven by Azure and AI revenue growth&hellip;</div>
+          </div>
+          <div style="padding-left: 16px; border-left: 3px solid var(--green);">
+            <div style="font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 2px;">Final Answer</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Synthesizes live Yahoo Finance data into a coherent summary</div>
+          </div>
+          <div style="margin-top: 16px; padding: 12px 18px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text-primary); line-height: 1.5;">
+            <strong>verbose=True</strong> shows this entire trace. Every stakeholder demo should include it.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 27: BREAK IT ====== -->
+  <div class="slide slide--dark slide--statement">
+    <div class="slide__inner">
+      <div class="eyebrow" style="text-align: center;">Part 4 &middot; Step 3</div>
+      <div class="statement__text" style="color: #fff;">
+        Now <span style="color: #fca5a5;">break it</span> on purpose.
+      </div>
+      <div class="statement__sub">
+        Ask the agent something Yahoo Finance can&rsquo;t answer &mdash; like &ldquo;What is an index fund?&rdquo; Watch what happens.<br><br>
+        <strong style="color: #fff;">Senior insight:</strong> The agent only has <code style="font-family: var(--font-mono); font-size: 18px;">YahooFinanceNewsTool</code>. Without a retriever tool, it can&rsquo;t fall back to your knowledge base. <em>Tool selection is architecture.</em>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 28: SECTION — PRODUCTION PITFALLS ====== -->
+  <div class="slide slide--section">
+    <div class="section__block-num">Production Pitfalls &middot; 20 Minutes</div>
+    <div class="section__title">The 6 Hard Calls</div>
+    <div class="section__sub">Battle-tested decisions that separate a hackathon bot from a production-grade one.</div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 29: PRODUCTION PITFALLS TABLE ====== -->
+  <div class="slide slide--dark" style="padding: 40px 60px;">
+    <div class="slide__inner">
+      <div class="eyebrow">Production Pitfalls</div>
+      <div class="heading-sm" style="color: #fff; margin-bottom: 24px;">The 6 decisions that matter at <span style="color: #60a5fa;">scale</span></div>
+      <div class="pitfall-grid" id="pitfallGrid">
+        <div class="pitfall-card" data-pitfall-group="0">
+          <div class="pitfall-card__num">#1</div>
+          <div class="pitfall-card__title">Chunk Size</div>
+          <div class="pitfall-card__wrong">Wrong: chunk_size=500 everywhere</div>
+          <div class="pitfall-card__right">Right: 200-300 for Q&A, 800-1000 for summaries. Wrong size = retrieval that looks right but misses context.</div>
+        </div>
+        <div class="pitfall-card" data-pitfall-group="0">
+          <div class="pitfall-card__num">#2</div>
+          <div class="pitfall-card__title">Embedding Model Swap</div>
+          <div class="pitfall-card__wrong">Wrong: Switch to cheaper model later</div>
+          <div class="pitfall-card__right">Right: Embedding model and chunk size are coupled. Change one = re-embed everything. Silent degradation.</div>
+        </div>
+        <div class="pitfall-card" data-pitfall-group="0">
+          <div class="pitfall-card__num">#3</div>
+          <div class="pitfall-card__title">k in Similarity Search</div>
+          <div class="pitfall-card__wrong">Wrong: k=3 because the tutorial said so</div>
+          <div class="pitfall-card__right">Right: k is a latency vs recall dial. Low k = fast, may miss. High k = noise confuses the LLM.</div>
+        </div>
+        <div class="pitfall-card" data-pitfall-group="1">
+          <div class="pitfall-card__num">#4</div>
+          <div class="pitfall-card__title">Temperature for Finance</div>
+          <div class="pitfall-card__wrong">Wrong: temperature=0 for &ldquo;deterministic&rdquo;</div>
+          <div class="pitfall-card__right">Right: 0 kills useful paraphrasing. 0.2-0.3 is the production sweet spot: accurate without being brittle.</div>
+        </div>
+        <div class="pitfall-card" data-pitfall-group="1">
+          <div class="pitfall-card__num">#5</div>
+          <div class="pitfall-card__title">When RAG Fails Silently</div>
+          <div class="pitfall-card__wrong">Wrong: &ldquo;RAG always works if data is good&rdquo;</div>
+          <div class="pitfall-card__right">Right: Fails when chunks miss the answer, retrieval returns wrong docs, or LLM ignores context. Each needs a different fix.</div>
+        </div>
+        <div class="pitfall-card" data-pitfall-group="1">
+          <div class="pitfall-card__num">#6</div>
+          <div class="pitfall-card__title">ChromaDB in Production</div>
+          <div class="pitfall-card__wrong">Wrong: &ldquo;We&rsquo;ll migrate later&rdquo;</div>
+          <div class="pitfall-card__right">Right: Migrate before millions of docs. pgvector for Postgres. Pinecone for sub-10ms. ChromaDB = dev only.</div>
+        </div>
+      </div>
+      <div style="margin-top: 24px; text-align: center; font-size: 16px; color: rgba(255,255,255,0.4);">
+        Every one of these failures is invisible until production. The time to decide is now.
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 30: WHAT YOU BUILT ====== -->
+  <div class="slide">
+    <div class="slide__inner">
+      <div class="eyebrow">Recap</div>
+      <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 32px;">
+        <div class="heading-md">What you <span class="accent">walk away with</span></div>
+        <img src="deck_images/rag_applications.png" alt="RAG Applications" style="height: 120px; width: auto; border-radius: 10px; border: 1px solid var(--border);">
+      </div>
+      <div class="cards-3">
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x1f916;</div>
+          <div class="card__title">Working Financial Bot</div>
+          <div class="card__desc">Running on your Virtual Lab, queryable with real financial questions right now.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x1f4be;</div>
+          <div class="card__title">Populated ChromaDB</div>
+          <div class="card__desc">Vector database with scraped financial data you built and ingested yourself.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x26d3;</div>
+          <div class="card__title">LangChain RAG Chain</div>
+          <div class="card__desc">Full retrieval pipeline connecting ChromaDB to GPT-4o-mini &mdash; code you wrote.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x1f3a8;</div>
+          <div class="card__title">Gradio Chat Interface</div>
+          <div class="card__desc">Demo-ready chat UI with conversation history, running in Colab.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x1f527;</div>
+          <div class="card__title">Agent + Yahoo Finance</div>
+          <div class="card__desc">Zero-shot ReAct agent with live stock news via YahooFinanceNewsTool.</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">&#x1f9e0;</div>
+          <div class="card__title">Architecture Mental Model</div>
+          <div class="card__desc">The framework to extend: new data sources, new tools, new LLMs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- ====== SLIDE 31: REFLECTION ====== -->
+  <div class="slide slide--dark slide--statement">
+    <div class="slide__inner">
+      <div class="eyebrow" style="text-align: center;">Reflection</div>
+      <div class="statement__text" style="color: #fff; font-size: clamp(32px, 3.5vw, 48px);">
+        Which component of the bot <span style="color: #60a5fa;">surprised you most</span>?
+      </div>
+      <div class="statement__sub" style="margin-top: 32px; font-size: 22px;">
+        Where would you deploy this inside <strong style="color: #fff;">Nucleus</strong> first?
+      </div>
+    </div>
+  </div>
+
+  
+
+</div>
+
+<!-- Notes panel -->
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-panel__label">Speaker Notes &middot; Press "." to toggle</div>
+  <div id="notesContent"></div>
+</div>
+
+<!-- Progress bar + counter -->
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-counter" id="slideCounter">1 / 39</div>
+<div class="branding">Acceler &middot; Nucleus Software</div>
+
+<!-- Click zones -->
+<div class="click-zone click-zone--prev" id="clickPrev"></div>
+<div class="click-zone click-zone--next" id="clickNext"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progressBar');
+  const slideCounter = document.getElementById('slideCounter');
+  const notesPanel = document.getElementById('notesPanel');
+  const notesContent = document.getElementById('notesContent');
+  let current = 0;
+  const total = slides.length;
+  let counterTimeout;
+  let notesVisible = false;
+
+  const speakerNotes = {
+    0: "ORIENTATION. Welcome everyone. Introduce the session format, Virtual Lab access, how to ask questions. Set the scene: 3 hours, real code, everyone leaves with a working bot.",
+    1: "INSTRUCTOR INTRO. Briefly introduce Shivam — Apple, Carnegie Mellon, ML/GenAI expert, 2 patents. Keep it under 2 minutes.",
+    2: "ICEBREAKER. Go around the room (or chat): one fintech problem you wish AI could solve. Note interesting answers — reference them later when the bot handles similar queries.",
+    3: "PRE-ASSESSMENT. Share the QR code / Google Form link. 10 MCQs, 5 minutes. Share aggregate results live — where the room is strong, where gaps exist. This calibrates the session.",
+    4: "COVER. Transition from orientation to the main session. Handover context to Shivam.",
+    5: "Let this land. No templates, no walkthroughs. The goal is a working bot by 6 PM. Every participant.",
+    6: "Walk through the 4 parts. Point out that Part 4 is only 15 min — it's fast and hands-on. Production Pitfalls at the end is the senior-level payoff.",
+    7: "Quick tour of the stack. Participants should recognize most of these. If anyone hasn't used ChromaDB or LangChain, reassure them — we'll build from scratch.",
+    8: "Run through the checklist quickly. SME should have pre-verified most VMs. Anyone stuck? Fix it now — we don't stop once Part 1 starts.",
+    9: "Transition slide. Part 1 is conceptual — no coding yet. Build the mental model before touching the keyboard.",
+    10: "EVOLUTION SLIDE. Walk through the three stages. Neural network image grounds the ML era. Key point: LLMs are pre-trained — you don't need to train from scratch. RAG adds your domain knowledge.",
+    11: "DEMO: Ask GPT-4o-mini a current interest rate question without RAG. Show the confident wrong answer. Let the room react. This is the problem we're solving.",
+    12: "BEFORE/AFTER DEMO. This is the money slide. Left: hallucinated answer with made-up rates. Right: grounded answer with source citation. Let the contrast speak for itself.",
+    13: "Walk through the pipeline left to right. Each arrow is a handoff. Participants should be able to name all 7 stages by the end of Part 1.",
+    14: "ZOOMED RAG DIAGRAM. This is the detailed architecture from the PPTX. Walk through each numbered step. Give participants time to study it.",
+    15: "RAG CYCLE DIAGRAM. Walk around the loop: Query → Retrieve → Augment → Generate → Answer. The animated circle shows it's a continuous process.",
+    16: "Three problems, one solution. RAG grounds the LLM in real data. Traceable, auditable, accurate.",
+    17: "2x2 MATRIX. Walk through all four quadrants. Top-right (RAG + Agents) is where we're going today. Clean and simple.",
+    18: "Embeddings are the magic. 'Similar meanings = similar vectors' is the core insight.",
+    19: "ChromaDB is our vector DB for today. Simple, Python-native. Production alternatives in Pitfalls.",
+    20: "Open the notebook together. Walk through the key imports. Anatomy, not execution.",
+    21: "Part 2 starts. Notebooks ready. Hands-on from here.",
+    22: "Scraping step. 10 minutes. Load Zerodha Varsity URLs via WebBaseLoader.",
+    23: "Chunking. chunk_size=1000, overlap=200. Inspect first few chunks.",
+    24: "Embedding + ingestion. Watch embeddings being created. API calls happen here.",
+    25: "Verification. Run similarity_search. If relevant docs come back, DB is ready.",
+    26: "Part 3. Connecting everything to build the actual bot.",
+    27: "LLM setup. Quick — 5 minutes. GPT-4o-mini, the workhorse.",
+    28: "Prompt template. ChatPromptTemplate with system + human messages. Test variations.",
+    29: "RAG chain. Moment of truth. create_stuff_documents_chain + create_retrieval_chain.",
+    30: "Gradio UI. 10 minutes. Launch the chat interface. Test financial queries.",
+    31: "Sample queries for testing. Blue = RAG. Orange = tool call (Part 4).",
+    32: "Part 4. Zero theory. 15 minutes.",
+    33: "The problem: RAG can't answer live stock questions. Enter Yahoo Finance tool.",
+    34: "Agent setup. initialize_agent with ZERO_SHOT_REACT_DESCRIPTION. verbose=True.",
+    35: "AGENT REASONING LOOP. Walk through the Thought → Action → Observation cycle with MSFT example.",
+    36: "Break it on purpose. Out-of-scope query. Tools must be scoped correctly.",
+    37: "Production Pitfalls. No demos. Rapid-fire. 6 decisions that matter at scale.",
+    38: "The 6 hard calls. Cards reveal in groups. Ask the room: which have you already hit?",
+    39: "Recap. 6 artifacts they built. Each is demo-ready.",
+    40: "Reflection. 'Where in Nucleus would you deploy this first?'",
+    41: "POST-ASSESSMENT. Share QR code. 10 MCQs + 5 practical questions. 8 minutes.",
+    42: "CLOSING. Reflection, Q&A, certificates. Acceler resource library shared.",
+    43: "FEEDBACK. Two QR codes: session feedback + connect with Shivam on LinkedIn.",
+    44: "Thank you. Formal sign-off.",
+  };
+
+  function updateNotes() {
+    const note = speakerNotes[current] || '';
+    notesContent.textContent = note;
+  }
+
+  function toggleNotes() {
+    notesVisible = !notesVisible;
+    notesPanel.classList.toggle('visible', notesVisible);
+  }
+
+  function updateProgress() {
+    const pct = ((current + 1) / total) * 100;
+    progressBar.style.width = pct + '%';
+    slideCounter.textContent = (current + 1) + ' / ' + total;
+    slideCounter.classList.add('visible');
+    clearTimeout(counterTimeout);
+    counterTimeout = setTimeout(() => slideCounter.classList.remove('visible'), 2000);
+    updateNotes();
+  }
+
+  // Pitfall animation
+  const PITFALL_SLIDE = 36;
+  let pitfallStep = -1;
+  let pitfallBuilt = false;
+
+  function resetPitfalls() {
+    document.querySelectorAll('.pitfall-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(12px)';
+    });
+    pitfallStep = -1;
+    pitfallBuilt = false;
+  }
+
+  function showPitfallGroup(group) {
+    document.querySelectorAll('.pitfall-card').forEach(el => {
+      if (parseInt(el.dataset.pitfallGroup) === group) {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }
+    });
+  }
+
+  function advancePitfalls() {
+    if (pitfallStep < 1) {
+      pitfallStep++;
+      pitfallBuilt = true;
+      showPitfallGroup(pitfallStep);
+      return true;
+    }
+    return false;
+  }
+
+  function retreatPitfalls() {
+    if (pitfallStep > 0) {
+      document.querySelectorAll('.pitfall-card').forEach(el => {
+        if (parseInt(el.dataset.pitfallGroup) === pitfallStep) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(12px)';
+        }
+      });
+      pitfallStep--;
+      return true;
+    }
+    return false;
+  }
+
+  function buildPitfalls() {
+    if (pitfallBuilt) return;
+    pitfallBuilt = true;
+    pitfallStep = 0;
+    setTimeout(() => showPitfallGroup(0), 300);
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    updateProgress();
+    if (current === PITFALL_SLIDE) {
+      resetPitfalls();
+      setTimeout(buildPitfalls, 200);
+    }
+  }
+
+  function handleNext() {
+    if (current === PITFALL_SLIDE && advancePitfalls()) return;
+    goTo(current + 1);
+  }
+
+  function handlePrev() {
+    if (current === PITFALL_SLIDE && retreatPitfalls()) return;
+    goTo(current - 1);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      handleNext();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      handlePrev();
+    } else if (e.key === 'Home') {
+      goTo(0);
+    } else if (e.key === 'End') {
+      goTo(total - 1);
+    } else if (e.key === '.') {
+      toggleNotes();
+    }
+  });
+
+  document.getElementById('clickPrev').addEventListener('click', () => handlePrev());
+  document.getElementById('clickNext').addEventListener('click', () => handleNext());
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? handleNext() : handlePrev();
+    }
+  });
+
+  const startSlide = new URLSearchParams(location.search).get('s');
+  if (startSlide !== null) goTo(parseInt(startSlide));
+  updateProgress();
+</script>
+
+</body>
+</html>
