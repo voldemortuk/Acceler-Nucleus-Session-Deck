@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acceler by UnO | Building a RAG-Powered Financial Bot with LLMs</title>
+<title>Acceler | Building a RAG-Powered Financial Bot with LLMs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -446,65 +446,50 @@
   .pipeline {
     display: flex;
     align-items: stretch;
-    gap: 0;
+    gap: 10px;
+    width: 100%;
   }
   .pipeline__stage {
     flex: 1;
-    padding: 20px 16px;
+    min-width: 0;
+    padding: 18px 14px;
     position: relative;
     display: flex;
     flex-direction: column;
     background: var(--bg-card);
-  }
-  .pipeline__stage:first-child {
     border: 1px solid var(--border);
-    border-radius: 14px 0 0 14px;
-    border-right: none;
-  }
-  .pipeline__stage:last-child {
-    border: 1px solid var(--border);
-    border-radius: 0 14px 14px 0;
-    border-left: none;
-  }
-  .pipeline__stage:not(:first-child):not(:last-child) {
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
   }
   .pipeline__arrow {
-    position: absolute;
-    right: -14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 28px; height: 28px;
-    background: var(--accent);
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 16px;
+    flex: 0 0 auto;
+    align-self: center;
+    color: var(--accent);
+    font-size: 22px;
     font-weight: 700;
-    z-index: 2;
   }
   .pipeline__label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--accent);
     margin-bottom: 6px;
   }
   .pipeline__title {
     font-family: var(--font-display);
     font-size: 18px;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     line-height: 1.2;
   }
   .pipeline__desc {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   /* ============================================
@@ -942,7 +927,7 @@
   <div class="slide slide--cover active">
     <div class="slide__inner" style="text-align: center;">
       <div style="display: flex; align-items: center; justify-content: center; gap: 36px; margin-bottom: 40px;">
-        <img src="deck_images/New_Logo_Blue.jpg" alt="Acceler" style="height: 80px; width: auto; border-radius: 8px;">
+        <img src="../New_Logo_Blue.jpg" alt="Acceler" style="height: 80px; width: auto; border-radius: 8px;">
         <div style="width: 2px; height: 56px; background: rgba(255,255,255,0.2);"></div>
         <img src="deck_images/nucleus_logo.png" alt="Nucleus Software" style="height: 56px; width: auto; filter: brightness(0) invert(1);">
       </div>
@@ -974,7 +959,7 @@
         Build a <span style="color: #60a5fa;">working Financial Bot</span> from scratch &mdash; no pre-built templates, no guided walkthroughs.
       </div>
       <div class="statement__sub">
-        Real code on real VMs. By 6 PM, every participant has a running chatbot that answers fintech queries with cited, retrieved context.
+        Live hands-on virtual labs. By 6 PM, every participant ships a working Financial Bot &mdash; and the RAG skills to build the next one.
       </div>
     </div>
   </div>
@@ -996,16 +981,19 @@
             <li>Privacy-Preserving ML</li>
             <li>Neural Architecture Search</li>
           </ul>
-          <!-- Company/University logos -->
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">&#xf8ff; Apple</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Google</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Adobe</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">CMU</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">MIT</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Cambridge</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Mila</span>
-            <span style="font-size: 11px; font-weight: 700; color: #555; padding: 4px 10px; background: #f3f3f3; border-radius: 6px; border: 1px solid #e0e0e0;">Caltech</span>
+          <!-- Experience logos — single composed strip -->
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Experience</div>
+          <div style="display: flex; align-items: center; justify-content: center; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px;">
+            <img src="deck_images/instructor_logos_strip.png" alt="Apple · Google · Adobe · Carnegie Mellon" style="width: 100%; max-width: 220px; height: auto; object-fit: contain; display: block;">
+          </div>
+          <!-- University badges -->
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Universities &amp; Research</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: 700; color: #1e40af; padding: 4px 10px; background: #eff6ff; border-radius: 6px; border: 1px solid #dbeafe;">CMU</span>
+            <span style="font-size: 11px; font-weight: 700; color: #1e40af; padding: 4px 10px; background: #eff6ff; border-radius: 6px; border: 1px solid #dbeafe;">MIT</span>
+            <span style="font-size: 11px; font-weight: 700; color: #1e40af; padding: 4px 10px; background: #eff6ff; border-radius: 6px; border: 1px solid #dbeafe;">Cambridge</span>
+            <span style="font-size: 11px; font-weight: 700; color: #1e40af; padding: 4px 10px; background: #eff6ff; border-radius: 6px; border: 1px solid #dbeafe;">Caltech</span>
+            <span style="font-size: 11px; font-weight: 700; color: #1e40af; padding: 4px 10px; background: #eff6ff; border-radius: 6px; border: 1px solid #dbeafe;">Mila</span>
           </div>
         </div>
         <!-- Right column: Details -->
@@ -1024,7 +1012,7 @@
 
           <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Academic &amp; Teaching</div>
           <ul style="list-style: disc; padding-left: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
-            <li><strong style="color: var(--text-primary);">Instructor @ Interview Kickstart</strong> &mdash; ML, DL, GenAI, production Python</li>
+            <li><strong style="color: var(--text-primary);">Instructor @ Acceler</strong> &mdash; ML, DL, GenAI, production Python</li>
             <li>Trained <strong style="color: var(--text-primary);">3000+ working professionals</strong> in ML, GenAI &amp; Agentic AI</li>
             <li>Visiting Researcher at <strong style="color: var(--text-primary);">Mila</strong> under Turing Laureate Prof Yoshua Bengio</li>
             <li>Visiting Research Student at <strong style="color: var(--text-primary);">Cambridge</strong> (Centre for Existential Risk)</li>
@@ -1033,9 +1021,8 @@
           <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Education</div>
           <ul style="list-style: disc; padding-left: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
             <li><strong style="color: var(--text-primary);">MS, Computer Science</strong> &mdash; Carnegie Mellon University</li>
-            <li><strong style="color: var(--text-primary);">BTech, Computer Engineering</strong> &mdash; Nirma University (First Class with Distinction)</li>
             <li>Research collaborations: MIT, Caltech, Stanford, Harvard</li>
-            <li><strong style="color: var(--text-primary);">Microsoft Global Hackathon Winner</strong> (2022, 2023) &middot; Erdos Number 2</li>
+            <li><strong style="color: var(--text-primary);">Erdos Number 2</strong> &middot; Microsoft Global Hackathon Winner</li>
           </ul>
         </div>
       </div>
@@ -1043,6 +1030,80 @@
   </div>
 
   
+
+<!-- ====== SLIDE: POP INTO THE CHAT ====== -->
+  <div class="slide" style="background: linear-gradient(135deg, #fef0e8 0%, #e0e7ff 100%);">
+    <div class="slide__inner" style="text-align: center;">
+      <div style="font-size: 22px; color: var(--text-primary); margin-bottom: 24px;">Welcome to today&rsquo;s class! Before we begin,</div>
+      <div style="font-family: var(--font-display); font-size: clamp(48px, 6vw, 80px); color: #4f46e5; line-height: 1.1; margin-bottom: 56px; font-weight: 700;">Pop Into The Chat:</div>
+      <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+        <div style="background: #fff; border-radius: 100px; padding: 18px 36px; font-size: 22px; color: var(--text-primary); display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+          <span style="font-size: 26px;">&#x1f464;</span> Your Name
+        </div>
+        <div style="background: #fff; border-radius: 100px; padding: 18px 36px; font-size: 22px; color: var(--text-primary); display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+          <span style="font-size: 26px;">&#x1f477;</span> Your Role
+        </div>
+        <div style="background: #fff; border-radius: 100px; padding: 18px 36px; font-size: 22px; color: var(--text-primary); display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+          <span style="font-size: 26px;">&#x1f3e0;</span> Your Location
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<!-- ====== SLIDE: OPTIMISE YOUR EXPERIENCE ====== -->
+  <div class="slide" style="background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);">
+    <div class="slide__inner">
+      <div style="font-family: var(--font-display); font-size: clamp(36px, 4.5vw, 56px); color: var(--text-primary); margin-bottom: 40px; font-weight: 700;"><span style="color: #4f46e5;">Optimise</span> Your Experience</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+        <div style="background: #fff; border-radius: 16px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); position: relative;">
+          <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">01</div>
+          <div style="position: absolute; top: 32px; right: 28px; width: 10px; height: 10px; border-radius: 50%; background: #f97316;"></div>
+          <div style="font-family: var(--font-display); font-size: 28px; color: var(--text-primary); margin-bottom: 16px; font-weight: 700;">Be Vocal</div>
+          <div style="font-size: 17px; color: var(--text-secondary); line-height: 1.5;">Interact with your instructor via the live class.</div>
+        </div>
+        <div style="background: #fff; border-radius: 16px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); position: relative;">
+          <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">02</div>
+          <div style="position: absolute; top: 32px; right: 28px; width: 10px; height: 10px; border-radius: 50%; background: #c026d3;"></div>
+          <div style="font-family: var(--font-display); font-size: 28px; color: var(--text-primary); margin-bottom: 16px; font-weight: 700;">Be Confident</div>
+          <div style="font-size: 17px; color: var(--text-secondary); line-height: 1.5;">Don&rsquo;t be shy to speak up and get clarifications!</div>
+        </div>
+        <div style="background: #fff; border-radius: 16px; padding: 32px 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); position: relative;">
+          <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">03</div>
+          <div style="position: absolute; top: 32px; right: 28px; width: 10px; height: 10px; border-radius: 50%; background: #6366f1;"></div>
+          <div style="font-family: var(--font-display); font-size: 28px; color: var(--text-primary); margin-bottom: 16px; font-weight: 700;">Be Active</div>
+          <div style="font-size: 17px; color: var(--text-secondary); line-height: 1.5;">Use your resources, solve assignments &amp; MCQs. It&rsquo;s your experience &mdash; what you put in is what you&rsquo;ll get out.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<!-- ====== SLIDE: SUCCESS HACKS ====== -->
+  <div class="slide" style="background: linear-gradient(135deg, #fef0e8 0%, #e0e7ff 100%);">
+    <div class="slide__inner">
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: center;">
+        <div style="background: linear-gradient(135deg, #fef0e8 0%, #fafaff 100%); border-radius: 16px; padding: 48px 36px; text-align: center;">
+          <div style="font-family: var(--font-display); font-size: clamp(36px, 4vw, 52px); color: var(--text-primary); line-height: 1.2; font-weight: 700;">Don&rsquo;t worry!<br>We are <span style="background: #e0e7ff; padding: 0 6px;">here to help</span><br>at your every step!</div>
+          <div style="font-size: 16px; color: var(--text-secondary); margin-top: 20px;">Learn these success hacks</div>
+        </div>
+        <div style="background: #fff; border-radius: 16px; padding: 36px 32px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Attend</span> every session</li>
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Be attentive</span> in the class</li>
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Participate</span> in the class activities and demos</li>
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Actively advocate</span> for yourself</li>
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Consistency</span> is the key</li>
+            <li style="font-size: 18px; color: var(--text-primary); padding: 8px 0; line-height: 1.6;">&bull; <span style="background: #fef0e8; padding: 0 4px;">Be patient</span> with yourself!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 <!-- ====== SLIDE: ICEBREAKER ====== -->
   <div class="slide slide--dark slide--statement">
@@ -1067,34 +1128,31 @@
       <div class="journey__blocks">
         <div class="journey__block">
           <div class="journey__block-num">1</div>
-          <div class="journey__block-time">30 min</div>
-          <div class="journey__block-title">AI &amp; RAG Foundations</div>
+          <div class="journey__block-time">35 min</div>
+          <div class="journey__block-title">RAG Fundamentals</div>
           <div class="journey__block-desc">Architecture, embeddings, ChromaDB &mdash; the mental model before you code.</div>
         </div>
         <div class="journey__arrow">&rarr;</div>
         <div class="journey__block">
           <div class="journey__block-num">2</div>
-          <div class="journey__block-time">30 min</div>
+          <div class="journey__block-time">35 min</div>
           <div class="journey__block-title">Build the Data Pipeline</div>
-          <div class="journey__block-desc">Scrape live financial sites, chunk, embed, and ingest into ChromaDB.</div>
+          <div class="journey__block-desc">Scrape, chunk, embed, and ingest into ChromaDB.</div>
         </div>
         <div class="journey__arrow">&rarr;</div>
         <div class="journey__block">
           <div class="journey__block-num">3</div>
-          <div class="journey__block-time">30 min</div>
+          <div class="journey__block-time">35 min</div>
           <div class="journey__block-title">Connect LLM &amp; Build Bot</div>
-          <div class="journey__block-desc">Wire RAG chain to GPT-4o-mini, build Streamlit UI, test live.</div>
+          <div class="journey__block-desc">Wire RAG chain to GPT-4o-mini, launch Gradio UI, test live.</div>
         </div>
         <div class="journey__arrow">&rarr;</div>
         <div class="journey__block">
           <div class="journey__block-num">4</div>
-          <div class="journey__block-time">15 min</div>
-          <div class="journey__block-title">Tools &amp; Agents</div>
-          <div class="journey__block-desc">Extend bot with live API tools and AgentExecutor.</div>
+          <div class="journey__block-time">20 min</div>
+          <div class="journey__block-title">Production Pitfalls</div>
+          <div class="journey__block-desc">Tuning, scaling, and the calls that ship production RAG.</div>
         </div>
-      </div>
-      <div style="text-align: center; margin-top: 28px; font-size: 17px; color: var(--text-muted);">
-        + 20 min Production Pitfalls &middot; Senior-level architecture decisions
       </div>
     </div>
   </div>
@@ -1143,9 +1201,9 @@
           <div class="stack-item__desc">Runtime environment</div>
         </div>
         <div class="stack-item">
-          <div class="stack-item__icon">&#x1f527;</div>
-          <div class="stack-item__name">AgentExecutor</div>
-          <div class="stack-item__desc">Tool-calling agent layer</div>
+          <div class="stack-item__icon">&#x1f578;</div>
+          <div class="stack-item__name">RetrievalQA</div>
+          <div class="stack-item__desc">LangChain RAG chain</div>
         </div>
       </div>
     </div>
@@ -1153,30 +1211,32 @@
 
   
 
-<!-- ====== SLIDE: VIRTUAL LABS SETUP ====== -->
+<!-- ====== SLIDE: VIRTUAL LABS ACCESS ====== -->
   <div class="slide">
     <div class="slide__inner">
-      <div class="eyebrow">Before We Start</div>
-      <div class="heading-md" style="margin-bottom: 28px;">Virtual Labs <span class="accent">Setup</span></div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+      <div class="eyebrow">Before We Dive In</div>
+      <div class="heading-md" style="margin-bottom: 16px;">Virtual Lab <span class="accent">Access &amp; Login</span></div>
+      <div class="text-md" style="margin-bottom: 28px; max-width: 760px;">
+        Let&rsquo;s take a quick moment to ensure everyone is set up properly. Your Virtual Lab access is essential for the hands-on work today. Shivam will walk through the login live.
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start;">
         <div>
-          <ul class="checklist">
-            <li>Confirm Python 3.10+ &mdash; <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">python3 --version</code></li>
-            <li>Clone session repo &amp; cd into it</li>
-            <li>Create &amp; activate virtualenv</li>
-            <li>Install dependencies &mdash; <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">pip install -r requirements.txt</code></li>
+          <ul class="checklist" style="margin-bottom: 0;">
+            <li>Is your <strong>Nuvepro VM</strong> running?</li>
+            <li>Have you signed in with your <strong>provided email credentials</strong> on Chrome?</li>
+            <li>Can you access the tools inside the lab environment?</li>
+            <li>Google Colab notebook ready to open</li>
           </ul>
         </div>
-        <div>
-          <ul class="checklist">
-            <li>Set OpenAI API key in environment</li>
-            <li>Verify ChromaDB import works</li>
-            <li>Verify LangChain import works</li>
-            <li>Open <code style="font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px; font-size: 15px;">Financial_Bot_with_LLMs.ipynb</code></li>
-          </ul>
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 14px; padding: 24px;">
+          <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;">Virtual Lab URL</div>
+          <div style="font-family: var(--font-mono); font-size: 14px; color: var(--text-primary); word-break: break-all; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px;">
+            cloudlabs.nuvepro.com/<wbr>company/UpwardandOnward/<wbr>home
+          </div>
+          <a href="https://cloudlabs.nuvepro.com/company/UpwardandOnward/home" target="_blank" style="display: inline-block; padding: 10px 20px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; border-radius: 8px; text-decoration: none;">Open Virtual Lab &rarr;</a>
         </div>
       </div>
-      <div style="margin-top: 32px; text-align: center; padding: 16px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 17px; color: var(--accent); font-weight: 600;">
+      <div style="margin-top: 28px; text-align: center; padding: 14px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 16px; color: var(--accent); font-weight: 600;">
         All green? Shivam begins Part 1.
       </div>
     </div>
@@ -1186,10 +1246,9 @@
 
 <!-- ====== SLIDE 6: SECTION — PART 1 ====== -->
   <div class="slide slide--section">
-    <div class="section__block-num">Part 1 &middot; 30 Minutes</div>
-    <div class="section__title">AI &amp; RAG Foundations</div>
-    <div class="section__sub">The architecture of a Financial Bot &mdash; concepts before code.</div>
-    <div class="section__duration">3:25 &ndash; 3:55 PM IST</div>
+    <div class="section__block-num">Part 1 &middot; 35 Minutes</div>
+    <div class="section__title">RAG Fundamentals &amp; System Architecture</div>
+    <div class="section__sub">Hallucination vs grounded answers, the RAG pipeline, and a ChromaDB walkthrough &mdash; before we write a line of code.</div>
   </div>
 
   
@@ -1221,22 +1280,43 @@
 
   
 
-<!-- ====== SLIDE 7: THE PROBLEM — LLMs HALLUCINATE ====== -->
-  <div class="slide slide--dark slide--statement">
+<!-- ====== SLIDE 7: THE PROBLEM — THE MODEL ISN'T THE BOTTLENECK ====== -->
+  <div class="slide slide--dark" style="padding: 48px 72px;">
     <div class="slide__inner">
-      <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
+      <div style="display: flex; gap: 44px; align-items: center; margin-bottom: 32px;">
         <div style="flex-shrink: 0;">
-          <img src="deck_images/brain_jar.png" alt="LLM - Brain in a Jar" style="height: 280px; width: auto; border-radius: 16px; opacity: 0.85;">
+          <img src="deck_images/brain_jar.png" alt="LLM — a powerful brain with no access to your data" style="height: 240px; width: auto; border-radius: 16px; opacity: 0.9; box-shadow: 0 10px 40px rgba(96,165,250,0.15);">
         </div>
-        <div style="max-width: 600px;">
-          <div class="eyebrow">The Problem</div>
-          <div class="statement__text" style="color: #fff; font-size: clamp(32px, 3.5vw, 48px); text-align: left;">
-            Ask GPT-4 a <span style="color: #fca5a5;">current financial question</span> without context &mdash; and it gives you a <span style="color: #fca5a5;">confident wrong answer.</span>
+        <div style="flex: 1;">
+          <div class="eyebrow" style="margin-bottom: 12px;">The Problem in 2026</div>
+          <div style="font-family: var(--font-display); font-size: clamp(30px, 3.4vw, 46px); line-height: 1.1; letter-spacing: -0.01em; color: #fff; margin-bottom: 14px;">
+            GPT-5 knows almost everything public.<br>
+            It still doesn&rsquo;t know <span style="color: #60a5fa;">your customer&rsquo;s EMI today.</span>
           </div>
-          <div class="statement__sub" style="text-align: left; margin-left: 0;">
-            LLMs are a &ldquo;smart brain in a jar&rdquo; &mdash; powerful reasoning, zero access to current data. For financial queries, that&rsquo;s not just wrong &mdash; it&rsquo;s dangerous.
+          <div style="font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.55;">
+            Frontier models have closed most reasoning gaps. What they still can&rsquo;t do: access your private data, cite a source a compliance officer will accept, or reflect a number that changed this morning. For a financial bot, that&rsquo;s the whole job.
           </div>
         </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1040px; margin: 0 auto;">
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 22px 22px 20px;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fca5a5; margin-bottom: 10px;">Gap 1 &middot; Freshness</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: #fff; margin-bottom: 8px; line-height: 1.2;">Training data is frozen.</div>
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.55;">RBI changed the repo rate this morning. The model doesn&rsquo;t know. And it won&rsquo;t tell you it doesn&rsquo;t know.</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 22px 22px 20px;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fcd34d; margin-bottom: 10px;">Gap 2 &middot; Private Data</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: #fff; margin-bottom: 8px; line-height: 1.2;">Your data isn&rsquo;t in the weights.</div>
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.55;">Product circulars, internal policy, customer ledgers &mdash; none of it was in pre-training, and none of it should be.</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 22px 22px 20px;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #86efac; margin-bottom: 10px;">Gap 3 &middot; Citations</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: #fff; margin-bottom: 8px; line-height: 1.2;">Compliance needs a source.</div>
+          <div style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.55;">&ldquo;The model said so&rdquo; doesn&rsquo;t survive an audit. Every answer needs a link a human can verify.</div>
+        </div>
+      </div>
+      <div style="max-width: 780px; margin: 30px auto 0; text-align: center; padding: 14px 22px; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.35); border-radius: 12px; font-size: 15px; color: #bfdbfe; line-height: 1.5;">
+        <strong style="color: #fff;">The shift:</strong> in 2026, the bottleneck isn&rsquo;t how smart the model is &mdash; it&rsquo;s how well you feed it <em>your</em> data. That&rsquo;s what RAG solves.
       </div>
     </div>
   </div>
@@ -1268,7 +1348,7 @@
             <div class="ba__query">&ldquo;What is the current SBI home loan interest rate?&rdquo;</div>
             <div class="ba__response">
               Based on the retrieved data from SBI&rsquo;s website (scraped today): SBI home loan rates currently start at <strong>8.50% p.a.</strong> under their &ldquo;Regular Home Loan&rdquo; scheme. Rates vary by loan amount and CIBIL score.<br><br>
-              <em style="color: var(--text-muted);">Source: sbi.co.in/web/personal-banking/loans/home-loans</em>
+              <em style="color: var(--text-muted);">Source: <a href="https://homeloans.sbi/products/view/home-loan" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">homeloans.sbi/products/view/home-loan</a></em>
             </div>
             <div class="ba__tag ba__tag--good">Grounded. Cited. Verifiable.</div>
           </div>
@@ -1292,38 +1372,38 @@
           <div class="pipeline__label">Step 1</div>
           <div class="pipeline__title">Website</div>
           <div class="pipeline__desc">Live financial data sources</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Step 2</div>
           <div class="pipeline__title">BeautifulSoup</div>
           <div class="pipeline__desc">Scrape &amp; clean HTML</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Step 3</div>
           <div class="pipeline__title">Embeddings</div>
           <div class="pipeline__desc">Text &rarr; vectors</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Step 4</div>
           <div class="pipeline__title">ChromaDB</div>
           <div class="pipeline__desc">Store &amp; index vectors</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Step 5</div>
           <div class="pipeline__title">LangChain RAG</div>
           <div class="pipeline__desc">Retrieve &amp; augment prompt</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Step 6</div>
           <div class="pipeline__title">GPT-4o-mini</div>
           <div class="pipeline__desc">Generate grounded answer</div>
-          <div class="pipeline__arrow">&rarr;</div>
         </div>
+        <div class="pipeline__arrow">&rarr;</div>
         <div class="pipeline__stage">
           <div class="pipeline__label">Output</div>
           <div class="pipeline__title">Gradio UI</div>
@@ -1433,10 +1513,14 @@
     <div class="slide__inner">
       <div class="eyebrow">RAG vs Pure LLM</div>
       <div class="heading-md" style="margin-bottom: 28px;">Why RAG <span class="accent">wins</span> for financial queries</div>
-      <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px;">
-        <img src="deck_images/user_llm_chat.png" alt="User-LLM interaction" style="height: 160px; width: auto; border-radius: 10px; border: 1px solid var(--border);">
-        <div style="font-size: 17px; color: var(--text-secondary); line-height: 1.6; max-width: 500px;">
-          A pure LLM conversation looks simple &mdash; user asks, model answers. But without grounding, the model invents facts. RAG adds a retrieval step between question and answer.
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin: 0 auto 28px;">
+        <div style="align-self: flex-start; max-width: 86%; background: var(--accent-light); border: 1px solid #dbeafe; border-radius: 14px 14px 14px 4px; padding: 14px 18px; font-size: 16px; color: var(--text-primary); line-height: 1.5;">
+          <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">User</div>
+          &ldquo;What are the latest RBI repo rate changes and how do they affect my home loan EMI?&rdquo;
+        </div>
+        <div style="align-self: flex-end; max-width: 86%; background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px 14px 4px 14px; padding: 14px 18px; font-size: 16px; color: var(--text-primary); line-height: 1.5;">
+          <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 4px;">LLM (no RAG)</div>
+          &ldquo;The RBI repo rate is 6.5% &hellip;&rdquo; <span style="color: var(--red); font-weight: 600;">&mdash; confidently outdated.</span>
         </div>
       </div>
       <div class="cards-3">
@@ -1480,12 +1564,12 @@
             <div style="font-family: var(--font-display); font-size: 26px; color: var(--text-primary); margin-bottom: 10px;">Fine-Tuning</div>
             <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Train on domain-specific data. Expensive and can&rsquo;t update without re-training.</div>
           </div>
-          <!-- Top-right: RAG + Agents — HIGHLIGHTED -->
+          <!-- Top-right: RAG — HIGHLIGHTED -->
           <div style="background: var(--accent-light); border: 3px solid var(--accent); border-radius: 14px; padding: 28px; box-shadow: 0 0 40px rgba(37,99,235,0.1); position: relative;">
             <div style="position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 16px; border-radius: 100px;">Today&rsquo;s Focus</div>
             <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">High customization &middot; Live data</div>
-            <div style="font-family: var(--font-display); font-size: 26px; color: var(--accent); margin-bottom: 10px;">RAG + Agents</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Retrieve fresh data, ground LLM responses, call live APIs. Best for financial queries.</div>
+            <div style="font-family: var(--font-display); font-size: 26px; color: var(--accent); margin-bottom: 10px;">RAG</div>
+            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.6;">Retrieve fresh domain data and ground LLM responses in it. The sweet spot for fintech Q&amp;A.</div>
           </div>
           <!-- Bottom-left: Pure LLM -->
           <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 28px;">
@@ -1613,9 +1697,9 @@ results = vectorstore.<span class="fn">similarity_search</span>(
 
 <!-- ====== SLIDE 13: SECTION — PART 2 ====== -->
   <div class="slide slide--section">
-    <div class="section__block-num">Part 2 &middot; 30 Minutes</div>
+    <div class="section__block-num">Part 2 &middot; 35 Minutes</div>
     <div class="section__title">Build the Data Pipeline</div>
-    <div class="section__sub">Scrape, vectorize, ingest &mdash; hands on VMs.</div>
+    <div class="section__sub">Scrape, clean, chunk, embed, and persist a live vector store &mdash; hands on VMs.</div>
   </div>
 
   
@@ -1708,25 +1792,27 @@ splits = text_splitter.<span class="fn">split_documents</span>(docs)
       <div class="heading-md" style="margin-bottom: 28px;">Embed &amp; Ingest into <span class="accent">ChromaDB</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
         <div>
-          <div class="text-md" style="margin-bottom: 20px;">Convert chunks to vectors using OpenAI&rsquo;s embedding model, then store everything in ChromaDB.</div>
-          <div class="text-md" style="margin-bottom: 20px;">After this step, you have a <strong>populated vector database</strong> with 50+ financial documents on your Virtual Lab.</div>
+          <div class="text-md" style="margin-bottom: 20px;">Convert the Zerodha Varsity chunks to vectors with OpenAI&rsquo;s embedding model, then store everything in ChromaDB.</div>
+          <div class="text-md" style="margin-bottom: 20px;">After this step, you have a <strong>populated vector database</strong> of Indian personal-finance content sitting on your Virtual Lab &mdash; indexed for cosine similarity search.</div>
           <div style="padding: 14px 18px; background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; font-size: 15px; color: var(--green); line-height: 1.5; font-weight: 600;">
             10 minutes. Watch the embeddings being created. Inspect a single vector &mdash; 1536 dimensions of meaning.
           </div>
         </div>
         <div class="code-block">
 <span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">OpenAIEmbeddings</span>
-<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> <span class="fn">Chroma</span>
+<span class="kw">from</span> langchain_chroma <span class="kw">import</span> <span class="fn">Chroma</span>
 
+embeddings  = <span class="fn">OpenAIEmbeddings</span>()
 vectorstore = <span class="fn">Chroma</span>.<span class="fn">from_documents</span>(
     documents=splits,
-    embedding=<span class="fn">OpenAIEmbeddings</span>()
+    embedding=embeddings
+)
+retriever = vectorstore.<span class="fn">as_retriever</span>(
+    search_kwargs={<span class="str">"k"</span>: <span class="num">4</span>}
 )
 
-retriever = vectorstore.<span class="fn">as_retriever</span>()
-
-<span class="fn">print</span>(<span class="fn">OpenAIEmbeddings</span>().model)
-<span class="cm"># text-embedding-ada-002</span>
+<span class="fn">print</span>(embeddings.model)
+<span class="cm"># text-embedding-ada-002 · 1536-dim</span>
         </div>
       </div>
     </div>
@@ -1741,25 +1827,26 @@ retriever = vectorstore.<span class="fn">as_retriever</span>()
       <div class="heading-md" style="margin-bottom: 28px;">Verify &mdash; <span class="accent">does it actually work?</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
         <div class="code-block" style="font-size: 16px;">
-<span class="cm"># Run a test similarity search</span>
-res = vectorstore.<span class="fn">similarity_search</span>(
-    <span class="str">"What is an index"</span>
-)
+<span class="cm"># Retrieval sanity check</span>
+query = <span class="str">"What is an index fund?"</span>
+results = vectorstore.<span class="fn">similarity_search</span>(query)
 
-<span class="fn">print</span>(res[<span class="num">0</span>].metadata)
-<span class="fn">print</span>(res[<span class="num">0</span>].page_content[:300])
+<span class="kw">for</span> i, doc <span class="kw">in</span> <span class="fn">enumerate</span>(results):
+    <span class="fn">print</span>(<span class="str">f"--- Chunk </span>{i+<span class="num">1</span>}<span class="str"> ---"</span>)
+    <span class="fn">print</span>(doc.metadata[<span class="str">"source"</span>])
+    <span class="fn">print</span>(doc.page_content[:<span class="num">200</span>])
         </div>
         <div>
           <div class="text-md" style="margin-bottom: 20px;"><strong>What you should see:</strong></div>
           <div class="cards-3" style="grid-template-columns: 1fr;">
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
-              <div style="font-size: 16px; color: var(--text-primary);">3 relevant documents about home loans returned</div>
+              <div style="font-size: 16px; color: var(--text-primary);">4 relevant chunks returned from Zerodha Varsity pages on index funds</div>
             </div>
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
-              <div style="font-size: 16px; color: var(--text-primary);">Metadata showing source URL and chunk position</div>
+              <div style="font-size: 16px; color: var(--text-primary);">Metadata with the Varsity source URL for each chunk</div>
             </div>
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
-              <div style="font-size: 16px; color: var(--text-primary);">Content directly answering the query</div>
+              <div style="font-size: 16px; color: var(--text-primary);">Content directly explaining what an index fund is</div>
             </div>
           </div>
           <div style="margin-top: 20px; padding: 14px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 16px; color: var(--accent); font-weight: 600;">
@@ -1774,9 +1861,9 @@ res = vectorstore.<span class="fn">similarity_search</span>(
 
 <!-- ====== SLIDE 18: SECTION — PART 3 ====== -->
   <div class="slide slide--section">
-    <div class="section__block-num">Part 3 &middot; 30 Minutes</div>
-    <div class="section__title">Connect the LLM &amp; Build the Bot</div>
-    <div class="section__sub">Wire ChromaDB to GPT-4o-mini. Ship a Streamlit UI.</div>
+    <div class="section__block-num">Part 3 &middot; 35 Minutes</div>
+    <div class="section__title">Connect the LLM &amp; Build the Financial Bot</div>
+    <div class="section__sub">RetrievalQA, prompt engineering, end-to-end query flow, and a live Gradio UI running on your VM.</div>
   </div>
 
   
@@ -1788,28 +1875,27 @@ res = vectorstore.<span class="fn">similarity_search</span>(
       <div class="heading-md" style="margin-bottom: 28px;">LLM Setup &mdash; <span class="accent">GPT-4o-mini</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
         <div>
-          <div class="text-md" style="margin-bottom: 20px;">Configure the language model with settings optimized for <strong>financial accuracy</strong>:</div>
+          <div class="text-md" style="margin-bottom: 20px;">Configure the language model for <strong>Zerodha Varsity Q&amp;A</strong> &mdash; deterministic, grounded, and cheap to run on every query:</div>
           <div class="cards-3" style="grid-template-columns: 1fr;">
             <div class="card" style="padding: 18px 20px;">
-              <div style="font-size: 16px;"><strong style="color: var(--accent);">temperature = 0.3</strong></div>
-              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Low enough for accuracy, high enough for readable paraphrasing. 0.0 kills useful variation; 0.7+ hallucinates.</div>
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">temperature = 0.0</strong></div>
+              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Deterministic for factual Q&amp;A. The retriever supplies the facts &mdash; the LLM just needs to phrase them faithfully.</div>
             </div>
             <div class="card" style="padding: 18px 20px;">
-              <div style="font-size: 16px;"><strong style="color: var(--accent);">model = gpt-4o-mini-2024-07-18</strong></div>
-              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Fast, cheap, and capable enough for RAG. The retriever does the heavy lifting &mdash; the LLM synthesizes.</div>
+              <div style="font-size: 16px;"><strong style="color: var(--accent);">model = gpt-4o-mini</strong></div>
+              <div style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Fast, cheap, capable enough for RAG. The retriever does the heavy lifting &mdash; the LLM synthesizes.</div>
             </div>
           </div>
         </div>
         <div class="code-block">
 <span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="fn">ChatOpenAI</span>
 
-llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o-mini"</span>)
+llm = <span class="fn">ChatOpenAI</span>(
+    model=<span class="str">"gpt-4o-mini"</span>,
+    temperature=<span class="num">0.0</span>
+)
 
-<span class="cm"># No longer using gpt-3.5-turbo</span>
-<span class="cm"># — gpt-4o-mini is newer, cheaper,</span>
-<span class="cm"># and more capable for RAG tasks</span>
-
-<span class="cm"># Quick test</span>
+<span class="cm"># Quick smoke test</span>
 response = llm.<span class="fn">invoke</span>(
     <span class="str">"What is a mutual fund?"</span>
 )
@@ -1827,44 +1913,48 @@ response = llm.<span class="fn">invoke</span>(
       <div class="eyebrow">Part 3 &middot; Step 2</div>
       <div class="heading-md" style="margin-bottom: 28px;">Prompt Template &mdash; <span class="accent">structure matters</span></div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
-        <div class="code-block" style="font-size: 14px;">
+        <div class="code-block" style="font-size: 13px;">
 <span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> \
     <span class="fn">ChatPromptTemplate</span>
 
 system_prompt = (
-  <span class="str">"You are a financial assistant for "</span>
-  <span class="str">"question-answering tasks. Use the "</span>
-  <span class="str">"following pieces of retrieved context "</span>
-  <span class="str">"to answer the question. If you don't "</span>
-  <span class="str">"know the answer, say that you don't "</span>
-  <span class="str">"know. Use three sentences maximum and "</span>
-  <span class="str">"keep the answer concise."</span>
-  <span class="str">"If the question is not clear ask "</span>
-  <span class="str">"follow up questions"</span>
-  <span class="str">"\n\n"</span>
+  <span class="str">"You are a knowledgeable financial "</span>
+  <span class="str">"assistant specialised in Indian "</span>
+  <span class="str">"personal finance, mutual funds, "</span>
+  <span class="str">"equity markets, and investment "</span>
+  <span class="str">"concepts — your knowledge base is "</span>
+  <span class="str">"Zerodha Varsity.\n\n"</span>
+  <span class="str">"Rules:\n"</span>
+  <span class="str">"• Use ONLY the retrieved context.\n"</span>
+  <span class="str">"• If the answer is not in context, "</span>
+  <span class="str">"  say you don't have enough info.\n"</span>
+  <span class="str">"• Keep answers 3–5 sentences.\n"</span>
+  <span class="str">"• Cite the key concept / source.\n"</span>
+  <span class="str">"• Ask a clarifying question if the "</span>
+  <span class="str">"  query is ambiguous.\n\n"</span>
   <span class="str">"{context}"</span>
 )
 
 prompt = <span class="fn">ChatPromptTemplate</span>.<span class="fn">from_messages</span>([
   (<span class="str">"system"</span>, system_prompt),
-  (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+  (<span class="str">"human"</span>,  <span class="str">"{input}"</span>),
 ])
         </div>
         <div>
-          <div class="text-md" style="margin-bottom: 16px;"><strong>Test 3 variations:</strong></div>
+          <div class="text-md" style="margin-bottom: 16px;"><strong>Why this prompt works:</strong></div>
           <div class="cards-3" style="grid-template-columns: 1fr;">
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--accent);">
-              <div style="font-size: 15px;"><strong>Strict:</strong> &ldquo;Answer ONLY from context. No outside knowledge.&rdquo;</div>
+              <div style="font-size: 15px;"><strong>Scoped persona:</strong> Indian personal finance + Zerodha Varsity &mdash; narrows the LLM to our domain.</div>
             </div>
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--orange);">
-              <div style="font-size: 15px;"><strong>Explanatory:</strong> &ldquo;Explain in simple terms with examples.&rdquo;</div>
+              <div style="font-size: 15px;"><strong>Grounded by rule:</strong> &ldquo;Use ONLY the retrieved context&rdquo; &mdash; explicit refusal when the answer isn&rsquo;t present.</div>
             </div>
             <div class="card" style="padding: 16px 18px; border-left: 3px solid var(--green);">
-              <div style="font-size: 15px;"><strong>Summary:</strong> &ldquo;Provide a 2-3 sentence summary.&rdquo;</div>
+              <div style="font-size: 15px;"><strong>Length &amp; citation:</strong> 3&ndash;5 sentences, cite the concept &mdash; production-ready out of the box.</div>
             </div>
           </div>
           <div style="margin-top: 16px; font-size: 15px; color: var(--text-muted); line-height: 1.5;">
-            Same query, different prompt &rarr; observe how wording changes output quality. The variables <code style="font-family: var(--font-mono); font-size: 14px;">{context}</code> and <code style="font-family: var(--font-mono); font-size: 14px;">{question}</code> are populated at runtime by LangChain.
+            <code style="font-family: var(--font-mono); font-size: 14px;">{context}</code> is populated at runtime with the top-<em>k</em> Varsity chunks from ChromaDB; <code style="font-family: var(--font-mono); font-size: 14px;">{input}</code> is the user question.
           </div>
         </div>
       </div>
@@ -1894,11 +1984,13 @@ rag_chain = <span class="fn">create_retrieval_chain</span>(
     retriever, question_answer_chain
 )
 
-<span class="cm"># Test it!</span>
-response = rag_chain.<span class="fn">invoke</span>(
-    {<span class="str">"input"</span>: <span class="str">"What is index fund?"</span>}
-)
+<span class="cm"># Test it on Varsity content</span>
+response = rag_chain.<span class="fn">invoke</span>({
+    <span class="str">"input"</span>: <span class="str">"What is an index fund?"</span>
+})
 <span class="fn">print</span>(response[<span class="str">"answer"</span>])
+<span class="kw">for</span> doc <span class="kw">in</span> response[<span class="str">"context"</span>]:
+    <span class="fn">print</span>(doc.metadata[<span class="str">"source"</span>])
         </div>
         <div>
           <div class="text-md" style="margin-bottom: 16px;">This is the <strong>moment of truth.</strong></div>
@@ -1927,34 +2019,35 @@ response = rag_chain.<span class="fn">invoke</span>(
 <span class="kw">from</span> langchain_core.messages <span class="kw">import</span> \
     <span class="fn">AIMessage</span>, <span class="fn">HumanMessage</span>
 
-<span class="kw">def</span> <span class="fn">predict</span>(question, chat_history):
-    history = []
-    <span class="kw">for</span> tup <span class="kw">in</span> chat_history:
-        history.<span class="fn">extend</span>([
-            <span class="fn">HumanMessage</span>(tup[<span class="num">0</span>]),
-            <span class="fn">AIMessage</span>(tup[<span class="num">1</span>])
-        ])
-    ai_msg = rag_chain.<span class="fn">invoke</span>({
+<span class="kw">def</span> <span class="fn">predict</span>(question, history):
+    lc_history = []
+    <span class="kw">for</span> user_msg, bot_msg <span class="kw">in</span> history:
+        lc_history.<span class="fn">append</span>(<span class="fn">HumanMessage</span>(content=user_msg))
+        lc_history.<span class="fn">append</span>(<span class="fn">AIMessage</span>(content=bot_msg))
+    result = rag_chain.<span class="fn">invoke</span>({
         <span class="str">"input"</span>: question,
-        <span class="str">"chat_history"</span>: history
+        <span class="str">"chat_history"</span>: lc_history
     })
-    <span class="kw">return</span> ai_msg[<span class="str">"answer"</span>]
+    <span class="kw">return</span> result[<span class="str">"answer"</span>]
 
-demo = gr.<span class="fn">ChatInterface</span>(predict,
-    title=<span class="str">"DocumentQABot"</span>,
-    theme=<span class="str">"soft"</span>)
-demo.<span class="fn">launch</span>()
+demo = gr.<span class="fn">ChatInterface</span>(
+    fn=predict,
+    title=<span class="str">"Zerodha Varsity Financial Bot"</span>,
+    theme=gr.themes.<span class="fn">Soft</span>(),
+    examples=EXAMPLES,
+)
+demo.<span class="fn">launch</span>(share=<span class="num">True</span>)
         </div>
         <div>
-          <div class="text-md" style="margin-bottom: 16px;">Gradio gives you a <strong>chat interface with history</strong> in ~15 lines. It runs right inside Google Colab.</div>
+          <div class="text-md" style="margin-bottom: 16px;">Gradio gives you a <strong>chat interface with history</strong> in ~15 lines &mdash; running right inside Colab with a public share URL.</div>
           <div style="padding: 14px 18px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; font-size: 16px; color: var(--accent); font-weight: 600; margin-bottom: 16px;">
-            Bonus: Chat history is built in &mdash; Gradio handles it automatically.
+            Bonus: Chat history is built in &mdash; Gradio handles the tuple format, we convert to LangChain messages.
           </div>
-          <div class="text-md" style="margin-bottom: 16px;">Test these queries:</div>
+          <div class="text-md" style="margin-bottom: 16px;">Try these Varsity-grounded queries:</div>
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What is an index fund?&rdquo;</div>
-            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;I want to give someone the right to manage my assets, what should I do?&rdquo;</div>
-            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What are the risks of investing in small-cap funds?&rdquo;</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What is an index fund and how does it differ from an actively managed fund?&rdquo;</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;How does a SIP work, and what is NAV?&rdquo;</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 8px; font-size: 15px; color: var(--text-secondary); font-style: italic;">&ldquo;What are ELSS funds and their tax benefits under 80C?&rdquo;</div>
           </div>
         </div>
       </div>
@@ -1967,48 +2060,48 @@ demo.<span class="fn">launch</span>()
   <div class="slide">
     <div class="slide__inner">
       <div class="eyebrow">Test Your Bot</div>
-      <div class="heading-md" style="margin-bottom: 28px;">Financial queries to <span class="accent">evaluate</span></div>
+      <div class="heading-md" style="margin-bottom: 28px;">Zerodha Varsity queries to <span class="accent">evaluate</span></div>
       <div class="query-cards">
         <div class="query-card">
           <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
-            <div class="query-card__text">&ldquo;What is the current interest rate for home loans in India?&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Concept</div>
+            <div class="query-card__text">&ldquo;What is an index fund and how does it differ from an actively managed fund?&rdquo;</div>
           </div>
         </div>
         <div class="query-card">
           <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
-            <div class="query-card__text">&ldquo;Provide insights on large-cap mutual funds performance&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Mechanics</div>
+            <div class="query-card__text">&ldquo;How does a Systematic Investment Plan (SIP) work?&rdquo;</div>
           </div>
         </div>
         <div class="query-card">
           <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
-            <div class="query-card__text">&ldquo;What are the tax implications of investing in government bonds?&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Definition</div>
+            <div class="query-card__text">&ldquo;What is NAV in mutual funds and how is it calculated?&rdquo;</div>
           </div>
         </div>
         <div class="query-card">
           <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--rag">RAG Retrieval</div>
-            <div class="query-card__text">&ldquo;Summarize the latest RBI guidelines on digital lending&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Comparison</div>
+            <div class="query-card__text">&ldquo;What is the difference between large-cap, mid-cap, and small-cap funds?&rdquo;</div>
           </div>
         </div>
         <div class="query-card">
           <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--rag">RAG + Synthesis</div>
-            <div class="query-card__text">&ldquo;Compare fixed deposits vs mutual funds for a 3-year horizon&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Tax &amp; Regulation</div>
+            <div class="query-card__text">&ldquo;What are ELSS funds and what tax benefits do they offer under Section 80C?&rdquo;</div>
           </div>
         </div>
         <div class="query-card">
-          <div class="query-card__icon query-card__icon--tool">T</div>
+          <div class="query-card__icon query-card__icon--rag">R</div>
           <div>
-            <div class="query-card__label query-card__label--tool">Tool Call (Part 4)</div>
-            <div class="query-card__text">&ldquo;What is the current USD/INR exchange rate?&rdquo;</div>
+            <div class="query-card__label query-card__label--rag">Multi-turn</div>
+            <div class="query-card__text">&ldquo;What are examples of it?&rdquo; <span style="color: var(--text-muted);">&mdash; follow-up after an index-fund question; history resolves &ldquo;it&rdquo;</span></div>
           </div>
         </div>
       </div>
@@ -2020,210 +2113,11 @@ demo.<span class="fn">launch</span>()
 
   
 
-<!-- ====== SLIDE 24: SECTION — PART 4 ====== -->
+<!-- ====== SLIDE: SECTION — PART 4 (PRODUCTION PITFALLS) ====== -->
   <div class="slide slide--section">
-    <div class="section__block-num">Part 4 &middot; 15 Minutes</div>
-    <div class="section__title">Tools &amp; Agent Extension</div>
-    <div class="section__sub">Zero theory. Write a tool. Register it. Break it.</div>
-  </div>
-
-  
-
-<!-- ====== SLIDE 25: WRITE THE TOOL ====== -->
-  <div class="slide">
-    <div class="slide__inner">
-      <div class="eyebrow">Part 4 &middot; Step 1</div>
-      <div class="heading-md" style="margin-bottom: 28px;">The Problem &mdash; <span class="accent">RAG can&rsquo;t do everything</span></div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start;">
-        <div>
-          <div class="text-md" style="margin-bottom: 16px;">Try asking the RAG chain:</div>
-          <div class="code-block" style="margin-bottom: 16px; font-size: 15px;">
-<span class="cm"># This will fail or hallucinate!</span>
-response = rag_chain.<span class="fn">invoke</span>({
-    <span class="str">"input"</span>: <span class="str">"What is the latest news</span>
-<span class="str">    about the Microsoft stock?"</span>
-})
-          </div>
-          <div class="text-md" style="margin-bottom: 16px;">RAG can only retrieve what&rsquo;s <strong>already in the vector store</strong>. For live data like stock news, we need <strong>tools</strong>.</div>
-          <div style="padding: 14px 18px; background: var(--orange-light); border: 1px solid var(--orange); border-radius: 10px; font-size: 16px; color: var(--orange); font-weight: 600;">
-            Enter: LangChain Agents + Yahoo Finance Tool
-          </div>
-        </div>
-        <div class="code-block" style="font-size: 15px;">
-<span class="kw">from</span> langchain_community.tools\
-    .yahoo_finance_news <span class="kw">import</span> \
-    <span class="fn">YahooFinanceNewsTool</span>
-
-tools = [<span class="fn">YahooFinanceNewsTool</span>()]
-
-<span class="cm"># This tool fetches live stock news</span>
-<span class="cm"># from Yahoo Finance — something</span>
-<span class="cm"># our vector DB can't do.</span>
-
-<span class="cm"># The agent will decide WHEN to</span>
-<span class="cm"># use this tool vs. the retriever</span>
-<span class="cm"># based on the user's question.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-
-<!-- ====== SLIDE 26: AGENT EXECUTOR ====== -->
-  <div class="slide">
-    <div class="slide__inner">
-      <div class="eyebrow">Part 4 &middot; Step 2</div>
-      <div class="heading-md" style="margin-bottom: 28px;">Initialize the <span class="accent">Agent</span></div>
-      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: start;">
-        <div class="code-block" style="font-size: 15px;">
-<span class="kw">from</span> langchain.agents <span class="kw">import</span> \
-    <span class="fn">AgentType</span>, <span class="fn">initialize_agent</span>
-<span class="kw">from</span> langchain_community.tools\
-    .yahoo_finance_news <span class="kw">import</span> \
-    <span class="fn">YahooFinanceNewsTool</span>
-
-llm = <span class="fn">ChatOpenAI</span>(
-    model=<span class="str">"gpt-4o-mini"</span>,
-    temperature=<span class="num">0.0</span>
-)
-tools = [<span class="fn">YahooFinanceNewsTool</span>()]
-
-agent_chain = <span class="fn">initialize_agent</span>(
-    tools,
-    llm,
-    agent=AgentType
-        .<span class="fn">ZERO_SHOT_REACT_DESCRIPTION</span>,
-    verbose=<span class="num">True</span>,
-    handle_parsing_errors=<span class="num">True</span>,
-)
-
-agent_chain.<span class="fn">run</span>(
-    <span class="str">"What is the latest news about</span>
-<span class="str">     the Microsoft stock?"</span>
-)
-        </div>
-        <div>
-          <div class="text-md" style="margin-bottom: 16px;"><strong>ZERO_SHOT_REACT_DESCRIPTION</strong></div>
-          <div class="text-md" style="margin-bottom: 16px;">A zero-shot agent that does a <strong>reasoning step before acting</strong>. Uses the ReAct framework to decide which tool to use based on the tool&rsquo;s description.</div>
-          <div class="text-md" style="margin-bottom: 16px;">Set <strong>verbose=True</strong> to watch the trace:</div>
-          <div class="code-block" style="font-size: 13px; background: #0f172a; border-color: #1e293b;">
-<span class="cm">Thought: I need to find the latest
-news about Microsoft stock.
-
-Action: yahoo_finance_news
-Action Input: MSFT
-
-Observation: Microsoft reported
-strong Q3 earnings driven by
-cloud and AI revenue growth...
-
-Final Answer: The latest Microsoft
-(MSFT) news includes strong Q3
-earnings driven by Azure and AI...</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-
-<!-- ====== SLIDE: AGENT REASONING LOOP ====== -->
-  <div class="slide" style="padding: 32px 60px;">
-    <div class="slide__inner">
-      <div class="eyebrow">How the Agent Thinks</div>
-      <div class="heading-md" style="margin-bottom: 12px;">The ReAct loop &mdash; <span class="accent">Thought &rarr; Action &rarr; Observation</span></div>
-      <div style="display: flex; gap: 48px; align-items: center; justify-content: center;">
-        <!-- Circular loop SVG -->
-        <svg viewBox="0 0 440 440" width="360" height="360" style="flex-shrink: 0;">
-          <circle cx="220" cy="220" r="175" fill="none" stroke="#e2e8f0" stroke-width="2"/>
-          <circle cx="220" cy="220" r="175" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="60,40" opacity="0.4">
-            <animateTransform attributeName="transform" type="rotate" from="0 220 220" to="360 220 220" dur="15s" repeatCount="indefinite"/>
-          </circle>
-          <!-- Center -->
-          <circle cx="220" cy="220" r="55" fill="var(--bg-dark)"/>
-          <text x="220" y="214" text-anchor="middle" font-family="DM Serif Display, serif" font-size="17" fill="#fff">Agent</text>
-          <text x="220" y="236" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="rgba(255,255,255,0.5)">Executor</text>
-          <!-- Input (top) -->
-          <circle cx="220" cy="45" r="32" fill="var(--bg-card)" stroke="var(--accent)" stroke-width="2.5"/>
-          <text x="220" y="40" text-anchor="middle" font-size="18">&#128172;</text>
-          <text x="220" y="58" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--accent)">INPUT</text>
-          <!-- Thought (top-right) -->
-          <circle cx="387" cy="138" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
-          <text x="387" y="133" text-anchor="middle" font-size="18">&#129504;</text>
-          <text x="387" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">THOUGHT</text>
-          <!-- Action (bottom-right) -->
-          <circle cx="323" cy="345" r="32" fill="var(--bg-card)" stroke="var(--orange)" stroke-width="2.5"/>
-          <text x="323" y="340" text-anchor="middle" font-size="18">&#9889;</text>
-          <text x="323" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--orange)">ACTION</text>
-          <!-- Observation (bottom-left) -->
-          <circle cx="117" cy="345" r="32" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
-          <text x="117" y="340" text-anchor="middle" font-size="18">&#128200;</text>
-          <text x="117" y="358" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--text-primary)">OBSERVE</text>
-          <!-- Final Answer (top-left) -->
-          <circle cx="53" cy="138" r="32" fill="var(--bg-card)" stroke="var(--green)" stroke-width="2.5"/>
-          <text x="53" y="133" text-anchor="middle" font-size="18">&#9989;</text>
-          <text x="53" y="151" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" font-weight="700" fill="var(--green)">ANSWER</text>
-          <!-- Arrows -->
-          <text x="316" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8594;</text>
-          <text x="380" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(60 380 255)">&#8594;</text>
-          <text x="220" y="392" font-size="16" fill="var(--text-muted)" text-anchor="middle">&#8592;</text>
-          <text x="65" y="255" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-60 65 255)">&#8594;</text>
-          <text x="124" y="78" font-size="16" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-30 124 78)">&#8593;</text>
-        </svg>
-        <div style="max-width: 400px;">
-          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--accent);">
-            <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 2px;">Input</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">&ldquo;What is the latest news about the Microsoft stock?&rdquo;</div>
-          </div>
-          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
-            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Thought</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">I need to find the latest news about Microsoft stock. I should use the Yahoo Finance tool.</div>
-          </div>
-          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--orange);">
-            <div style="font-size: 14px; font-weight: 700; color: var(--orange); margin-bottom: 2px;">Action</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Calls <code style="font-family: var(--font-mono); font-size: 14px;">yahoo_finance_news(&quot;MSFT&quot;)</code></div>
-          </div>
-          <div style="margin-bottom: 14px; padding-left: 16px; border-left: 3px solid var(--border);">
-            <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Observe</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Microsoft reported strong Q3 earnings driven by Azure and AI revenue growth&hellip;</div>
-          </div>
-          <div style="padding-left: 16px; border-left: 3px solid var(--green);">
-            <div style="font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 2px;">Final Answer</div>
-            <div style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">Synthesizes live Yahoo Finance data into a coherent summary</div>
-          </div>
-          <div style="margin-top: 16px; padding: 12px 18px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text-primary); line-height: 1.5;">
-            <strong>verbose=True</strong> shows this entire trace. Every stakeholder demo should include it.
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-
-<!-- ====== SLIDE 27: BREAK IT ====== -->
-  <div class="slide slide--dark slide--statement">
-    <div class="slide__inner">
-      <div class="eyebrow" style="text-align: center;">Part 4 &middot; Step 3</div>
-      <div class="statement__text" style="color: #fff;">
-        Now <span style="color: #fca5a5;">break it</span> on purpose.
-      </div>
-      <div class="statement__sub">
-        Ask the agent something Yahoo Finance can&rsquo;t answer &mdash; like &ldquo;What is an index fund?&rdquo; Watch what happens.<br><br>
-        <strong style="color: #fff;">Senior insight:</strong> The agent only has <code style="font-family: var(--font-mono); font-size: 18px;">YahooFinanceNewsTool</code>. Without a retriever tool, it can&rsquo;t fall back to your knowledge base. <em>Tool selection is architecture.</em>
-      </div>
-    </div>
-  </div>
-
-  
-
-<!-- ====== SLIDE 28: SECTION — PRODUCTION PITFALLS ====== -->
-  <div class="slide slide--section">
-    <div class="section__block-num">Production Pitfalls &middot; 20 Minutes</div>
-    <div class="section__title">The 6 Hard Calls</div>
-    <div class="section__sub">Battle-tested decisions that separate a hackathon bot from a production-grade one.</div>
+    <div class="section__block-num">Part 4 &middot; 20 Minutes</div>
+    <div class="section__title">Production Considerations &amp; Pitfalls</div>
+    <div class="section__sub">Tuning, scaling, failure modes &mdash; the calls that separate a demo from a deployment.</div>
   </div>
 
   
@@ -2310,8 +2204,8 @@ earnings driven by Azure and AI...</span>
         </div>
         <div class="card" style="text-align: center;">
           <div style="font-size: 36px; margin-bottom: 12px;">&#x1f527;</div>
-          <div class="card__title">Agent + Yahoo Finance</div>
-          <div class="card__desc">Zero-shot ReAct agent with live stock news via YahooFinanceNewsTool.</div>
+          <div class="card__title">Production Playbook</div>
+          <div class="card__desc">Chunking, top-k, temperature, and scaling trade-offs &mdash; the calls that separate demos from deployments.</div>
         </div>
         <div class="card" style="text-align: center;">
           <div style="font-size: 36px; margin-bottom: 12px;">&#x1f9e0;</div>
@@ -2332,7 +2226,7 @@ earnings driven by Azure and AI...</span>
         Which component of the bot <span style="color: #60a5fa;">surprised you most</span>?
       </div>
       <div class="statement__sub" style="margin-top: 32px; font-size: 22px;">
-        Where would you deploy this inside <strong style="color: #fff;">Nucleus</strong> first?
+        Where would you deploy this inside <strong style="color: #fff;"> Nucleus Software</strong> first?
       </div>
     </div>
   </div>
@@ -2349,7 +2243,7 @@ earnings driven by Azure and AI...</span>
 
 <!-- Progress bar + counter -->
 <div class="progress-bar" id="progressBar"></div>
-<div class="slide-counter" id="slideCounter">1 / 39</div>
+<div class="slide-counter" id="slideCounter">1 / 37</div>
 <div class="branding">Acceler &middot; Nucleus Software</div>
 
 <!-- Click zones -->
@@ -2374,18 +2268,18 @@ earnings driven by Azure and AI...</span>
     3: "PRE-ASSESSMENT. Share the QR code / Google Form link. 10 MCQs, 5 minutes. Share aggregate results live — where the room is strong, where gaps exist. This calibrates the session.",
     4: "COVER. Transition from orientation to the main session. Handover context to Shivam.",
     5: "Let this land. No templates, no walkthroughs. The goal is a working bot by 6 PM. Every participant.",
-    6: "Walk through the 4 parts. Point out that Part 4 is only 15 min — it's fast and hands-on. Production Pitfalls at the end is the senior-level payoff.",
+    6: "Walk through the 4 parts. Parts 1–3 are each 35 min of hands-on build; Part 4 (20 min) is the senior-level production payoff.",
     7: "Quick tour of the stack. Participants should recognize most of these. If anyone hasn't used ChromaDB or LangChain, reassure them — we'll build from scratch.",
     8: "Run through the checklist quickly. SME should have pre-verified most VMs. Anyone stuck? Fix it now — we don't stop once Part 1 starts.",
     9: "Transition slide. Part 1 is conceptual — no coding yet. Build the mental model before touching the keyboard.",
     10: "EVOLUTION SLIDE. Walk through the three stages. Neural network image grounds the ML era. Key point: LLMs are pre-trained — you don't need to train from scratch. RAG adds your domain knowledge.",
-    11: "DEMO: Ask GPT-4o-mini a current interest rate question without RAG. Show the confident wrong answer. Let the room react. This is the problem we're solving.",
+    11: "THE 2026 FRAME. Don't rehash 'LLMs hallucinate' — the room knows GPT-5 is smart. Land the new angle: the bottleneck is private + current data + citations, not raw model intelligence. RAG is the bridge. 90 seconds max.",
     12: "BEFORE/AFTER DEMO. This is the money slide. Left: hallucinated answer with made-up rates. Right: grounded answer with source citation. Let the contrast speak for itself.",
     13: "Walk through the pipeline left to right. Each arrow is a handoff. Participants should be able to name all 7 stages by the end of Part 1.",
     14: "ZOOMED RAG DIAGRAM. This is the detailed architecture from the PPTX. Walk through each numbered step. Give participants time to study it.",
     15: "RAG CYCLE DIAGRAM. Walk around the loop: Query → Retrieve → Augment → Generate → Answer. The animated circle shows it's a continuous process.",
     16: "Three problems, one solution. RAG grounds the LLM in real data. Traceable, auditable, accurate.",
-    17: "2x2 MATRIX. Walk through all four quadrants. Top-right (RAG + Agents) is where we're going today. Clean and simple.",
+    17: "2x2 MATRIX. Walk through all four quadrants. Top-right (RAG) is where we're going today. Clean and simple.",
     18: "Embeddings are the magic. 'Similar meanings = similar vectors' is the core insight.",
     19: "ChromaDB is our vector DB for today. Simple, Python-native. Production alternatives in Pitfalls.",
     20: "Open the notebook together. Walk through the key imports. Anatomy, not execution.",
@@ -2399,20 +2293,15 @@ earnings driven by Azure and AI...</span>
     28: "Prompt template. ChatPromptTemplate with system + human messages. Test variations.",
     29: "RAG chain. Moment of truth. create_stuff_documents_chain + create_retrieval_chain.",
     30: "Gradio UI. 10 minutes. Launch the chat interface. Test financial queries.",
-    31: "Sample queries for testing. Blue = RAG. Orange = tool call (Part 4).",
-    32: "Part 4. Zero theory. 15 minutes.",
-    33: "The problem: RAG can't answer live stock questions. Enter Yahoo Finance tool.",
-    34: "Agent setup. initialize_agent with ZERO_SHOT_REACT_DESCRIPTION. verbose=True.",
-    35: "AGENT REASONING LOOP. Walk through the Thought → Action → Observation cycle with MSFT example.",
-    36: "Break it on purpose. Out-of-scope query. Tools must be scoped correctly.",
-    37: "Production Pitfalls. No demos. Rapid-fire. 6 decisions that matter at scale.",
-    38: "The 6 hard calls. Cards reveal in groups. Ask the room: which have you already hit?",
-    39: "Recap. 6 artifacts they built. Each is demo-ready.",
-    40: "Reflection. 'Where in Nucleus would you deploy this first?'",
-    41: "POST-ASSESSMENT. Share QR code. 10 MCQs + 5 practical questions. 8 minutes.",
-    42: "CLOSING. Reflection, Q&A, certificates. Acceler resource library shared.",
-    43: "FEEDBACK. Two QR codes: session feedback + connect with Shivam on LinkedIn.",
-    44: "Thank you. Formal sign-off.",
+    31: "Sample queries for testing. All RAG-grounded. Evaluate for accuracy, hallucination, and whether context was cited.",
+    32: "Part 4. Production Considerations & Pitfalls. 20 minutes. Rapid-fire, no demos.",
+    33: "The 6 hard calls. Cards reveal in groups. Ask the room: which have you already hit?",
+    34: "Recap. 6 artifacts they built. Each is demo-ready.",
+    35: "Reflection. 'Where in Nucleus Software would you deploy this first?'",
+    36: "POST-ASSESSMENT. Share QR code. 10 MCQs + 5 practical questions. 8 minutes.",
+    37: "CLOSING. Reflection, Q&A, certificates. Acceler resource library shared.",
+    38: "FEEDBACK. Two QR codes: session feedback + connect with Shivam on LinkedIn.",
+    39: "Thank you. Formal sign-off.",
   };
 
   function updateNotes() {
@@ -2436,7 +2325,7 @@ earnings driven by Azure and AI...</span>
   }
 
   // Pitfall animation
-  const PITFALL_SLIDE = 36;
+  const PITFALL_SLIDE = 34;
   let pitfallStep = -1;
   let pitfallBuilt = false;
 
